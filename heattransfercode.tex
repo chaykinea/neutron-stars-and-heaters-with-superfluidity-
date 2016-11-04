@@ -1,0 +1,241 @@
+% article.tex, a sample LaTeX file.
+% Run LaTeX on this file twice for proper section numbers.
+% A '%' causes LaTeX to ignore remaining text on the line
+% Use the following line for draft mode (double spaced, single column)
+\documentclass[preprint,pre,floats,aps,amsmath,amssymb]{revtex4}
+% Use the following line for journal mode (single spaced, double column)
+%\documentclass[twocolumn,pre,floats,aps,amsmath,amssymb]{revtex4}
+\usepackage{graphicx}
+\usepackage{bm}
+
+
+\begin{document}
+
+\begin{minipage}[h]{\textwidth}
+ \begin{center}
+ \textbf{\large{1D heat transfer code}} 
+\end{center}
+\end{minipage}
+\\
+
+\section{Introduction}
+This document is written with the purpose of giving a reader information of basic structure of 1D heat transfer code as well as instructions of how to use this code. 1D heat transfer code simulates thermal evolution of isolated static neutron stars. All the Physics which is required to build heat capacity, neutrino emissivity, thermal conductivity functions and TiTe relation was copied from O. Gnedin's Neutron Star Evolution code. The code has
+been written in python programming language.
+
+\section{Heat equation}
+\par If we have a static spherically symmetric neutron star (NS) with an isotropic magnetic field, all we need to solve in our numerical computation is the heat equation. Taking into account rotational symmetry, we make temperature $T$ be a function only of two variables: $r$ - the distance from the center of NS  and $t$ - time, that is counted form the birth of NS.  Therefore, we come up with a following equation:
+\begin{equation}
+C(T,\rho)\frac{\partial T}{\partial t} = \frac{1}{4 \pi r^{2}}div(4 \pi r^{2}\kappa(T,\rho)\nabla(T)) - Q(T,\rho).
+\label{eq:1}
+\end{equation}
+Here $C$ is the heat capacity per unit volume, $Q$  is the neutrino emissivity and $\kappa$ is the thermal conductity. We make these three functions depend not on $r$ but on $\rho$ instead for computational reasons. It is worth to say, that we can make $\rho$ be a function of $r$ and vice versa.
+\par It is known, that neutron stars are extremely dense objects in the Universe, so one cannot neglet General relativity effects.  In this case we introduce metric for a spherically symmetric static star:
+\begin{equation*}
+ds^{2} = \left(1-\frac{2GM(r)}{rc^{2}}\right)c^{2}dt^{2} - \left(1-\frac{2GM(r)}{rc^{2}}\right)^{-1}dr^{2} - r^{2}\left(d\theta^{2}+sin^{2}\theta d\varphi^{2}\right).
+\end{equation*}
+By M(r) function we mean the mass, that is enclosed within a sphere with a radius $r$.
+\par In such metric equation \ref{eq:1} takes more complicated form:
+\begin{equation}
+C\frac{\partial \tilde{T}}{\sqrt{1 - \frac{2GM}{rc^{2}}}\partial t} = \frac{1}{4\pi r^{2}}div\left(4\pi r^{2} \sqrt{1 - \frac{2GM}{rc^{2}}}\kappa e^{\Phi}\nabla(\tilde{T})\right) - \frac{\tilde{Q}}{\sqrt{1 - \frac{2GM}{rc^{2}}}},
+\label{eq:2}
+\end{equation}
+where $\tilde{T} \equiv Te^{\Phi}$  is the redshifted temperature, $\tilde{Q} \equiv Qe^{2\Phi}$ is the redshifted neutrino emissivity, $\Phi \equiv \frac{\phi(r)}{c^{2}}$ is the dimensionless gravitational potential. 
+\par This equation is a nonhomogeneous parabolic equation, so we have to introduce two boundary conditions and one initial condition. At $r=0$ for radial component of redshifted luminosity vector $\tilde{L}$ we have
+\begin{equation*} 
+\tilde{L}_{r} =  - 4\pi r^{2} \sqrt{1 - \frac{2GM}{rc^{2}}}\kappa e^{\Phi}\nabla(\tilde{T}) = 0.
+\end{equation*}
+At $r=R$, where $R$ is the radius of NS, we obtain
+\begin{equation}
+\tilde{L}_{r}  =  - 4\pi r^{2} \sqrt{1 - \frac{2GM}{rc^{2}}}\kappa e^{\Phi}\nabla(\tilde{T}) = 4\pi R^{2} \sigma T^{4}_{e}(T)e^{2\Phi},
+\label{eq:3}
+ \end{equation}
+ where second term represents photon radiation from the surface of NS and $T_{e}(T)$ - is the effective surface temperature. Finally, the time condition: at t = 0 
+\begin{equation*}
+\tilde{T} = T_0,
+\end{equation*}
+where $T_0$ is the initial redshifted temperature of the NS.
+\par There is one more thing left to cover in equation \ref{eq:2} - we need somehow to compute $C$, $\tilde{Q}$ and $\kappa$ functions. In this document we are not going to go into details and talk about physics, that is behind those function. If you are a meticulous reader, we encourage you to look for such information in Gnedin's Neutron Star Evolution code.
+\section{Numerical scheme} \label{Numerical scheme}
+\par  We use finite difference  \textbf{backward Euler method} (BEM) to solve equation \ref{eq:2}. It is implicit and unconditionally stable, so we are free to choose any time step $dt$. BEM solution converges as $O(dt)$ in time and $O(dr^{2})$) in spatial dimension.
+\newpage
+\par Let's look closer at how BEM solves equation \ref{eq:2}.
+\\ 
+Suppose, we have a stiff inhomogeneous parabolic equation in the general form
+
+\begin{equation*}
+a(r,T) T'_{t} =  b(r,T)\left(c(r,T)T'_{r}\right)'_{r} - d(r,T), \quad T = T(r,t).
+\end{equation*}
+We have an 1-dimensional code, so we need to create a mesh by dividing our neutron star into
+spherical layers with width $dr_{i}$. Therefore, we can write
+\begin{equation*}
+\sum\limits_{i=1}^{N}dr_{i} = R.
+\end{equation*}
+We discretize $t$ in the same way:
+\begin{equation*}
+\sum\limits_{n=1}^{N'}dt_{n} = t.
+\end{equation*}
+We consider the situation, where $dr_{i} \neq dr_{i+1}$ and $dt_{n} \neq dt_{n+1}$ can take place. After straightforward steps we get
+\begin{equation*}
+a_{i}^{n} \frac{T_{i}^{n+1} - T_{i}^{n}}{dt_{n+\frac{1}{2}}} =  b_{i}^{n}\left(c_{i}^{n} (T_{i}^{n+1})'_{r}\right)'_{r} - d_{i}^{n}
+\end{equation*}
+and
+\begin{equation}
+a_{i}^{n} \frac{T_{i}^{n+1} - T_{i}^{n}}{dt_{n+\frac{1}{2}}} =  \frac{b_{i}^{n}}{dr_{i}}\left(c_{i+\frac{1}{2}}^{n} \frac{T_{i+1}^{n+1} - T_{i}^{n+1}}{dr_{i+\frac{1}{2}}} - c_{i-\frac{1}{2}}^{n} \frac{T_{i}^{n+1} - T_{i-1}^{n+1}}{dr_{i-\frac{1}{2}}}\right) - d_{i}^{n}.
+\label{eq:4}
+\end{equation}
+If one find $i+\frac{1}{2}$ notation bizzare, all we did was create a 1D mesh with n cells ($ i = 1, 2,..., n+1$) and divided each cell into two new cells, so in this case ($ i = 1, \frac{3}{2}, 2, \frac{5}{2},..., n+1$). Taking such partition, we get more accurate solution. Notice, that $dr_{i+\frac{1}{2}}$ is the interval between $dr_{i+1}$ and $dr_{i}$, but $c_{i+\frac{1}{2}}^{n}$ is function c, computed in the node $r_{i+1}$ at time $t^{n}$.
+\par Introducing coefficients
+\begin{equation*}
+A_{i} = \frac{b_{i}^{n}c^{n}_{i+\frac{1}{2}}dt_{n+\frac{1}{2}}}{dr_{i+\frac{1}{2}}dr_{i}a_{i}^{n}}, \quad B_{i} = \frac{b_{i}^{n}c^{n}_{i-\frac{1}{2}}dt_{n+\frac{1}{2}}}{dr_{i-\frac{1}{2}}dr_{i}a_{i}^{n}}, \quad D_{i} = \frac{dt_{n+\frac{1}{2}}}{a^{n}_{i}},
+\end{equation*}
+from equation \ref{eq:4} we get 
+\begin{equation*}
+(1 +  A_{i} + B_{i})T_{i}^{n+1}  - A_{i}T_{i+1}^{n+1} - B_{i}T_{i-1}^{n+1} = T_{i}^{n} -  D_{i}d^{n}_{i}.
+\end{equation*}
+The last equation can be represented in matrix-vector form:
+\begin{equation*}
+\begin{bmatrix} (1+A_{1} + B_{1}) &  -A_{1} & 0 &   \cdots & 0  \\
+-B_{2} & (1+A_{2} + B_{2}) &  -A_{2} &   \cdots & 0  \\
+0 & -B_{3} & (1+A_{3} + B_{3}) &     \cdots & 0  \\
+ \vdots &  \vdots &  \vdots &     \ddots & \vdots  \\
+0 & 0 & 0 & \cdots & (1+A_{N} + B_{N})   \\
+\end{bmatrix} \times \left[ \begin{array}{c}
+ T^{n+1}_{1}  \\ T^{n+1}_{2} \\ T^{n+1}_{3} \\ \vdots  \\ T^{n+1}_{N} \end{array} \right] 
+= \left[ \begin{array}{c}
+ T^{n}_{1}  - D_{1}  + \Psi \\T^{n}_{2} - D_{2} \\ T^{n}_{3} - D_{3} \\ \vdots  \\T^{n}_{N} - D_{N} + \Phi \end{array} \right],
+\end{equation*}
+where functions $\Phi$ and $\Psi$ have appeared due to boudary conditions at the first and the last node in the mesh.
+\par So, knowing temperature $T$ at time $t^{n}$, we can find $T$ at time $t^{n+1}$ by solving matrix equation above. Our code uses Thomas algorithm to solve that system with a tridiagonal matrix.
+
+\section{Isothermal profile algorithm}
+\par When the temperature profile of NS does not change shape anymore, it is reasonable to create something faster and rather simpler, than the above mentioned numerical schemes. Therefore, in this code we also place the third numerical scheme - \textbf{isothermal profile algorithm} (IPA). If  temperature $\tilde{T}$ is constant($r$) in equation \ref{eq:2}, we can use such scheme. It works faster, than the other two algorythms, because IPA solves not the linear system, but the linear equation, using an explicit Euler scheme. To get formulas for IPA, we need to integrate first and third term in equation \ref{eq:3} over the the total volume of NS. So, considering the above said, we come out with formula
+\begin{equation*}
+C_{total}(T_{i})\frac{\partial \tilde{T_{i}}}{\partial t} = -\tilde{L}(T_{e}) - \tilde{Q}_{total}(T_{i}),
+ \end{equation*}
+ where $T_{i}$ is the temperature in the cell, that is closest to the NS surface. The total heat capacity $C_{total}$ and the total neutrino luminosity $Q_{total}$ are defined as follows:
+\begin{equation*}
+C_{total} = \int\limits_{0}^{R} C\frac{1}{\sqrt{1 - \frac{2GM}{rc^{2}}}} 4 \pi r^{2} dr
+ \end{equation*}
+ \begin{equation*}
+\tilde{Q}_{total} = \int\limits_{0}^{R} \tilde{Q}\frac{1}{\sqrt{1 - \frac{2GM}{rc^{2}}}} 4 \pi r^{2} dr
+ \end{equation*}
+ The photon luminosity $\tilde{L}$ is just the luminosity at the stellar boundary, is defined by the formula
+  \begin{equation*}
+\tilde{L} = \sigma T^{4}_e (T_{i})e^{2\Phi_{R}},
+ \end{equation*}
+ where $\Phi_{R} = \Phi(R)$.
+ \section{Analytical test} \label{Analytical test}
+ \par It is important before running the simulation to make sure, that the numerical scheme, which will be used in the main cycle, works fine. In order to do this, we can create an equation which has the same form as the equation \ref{eq:1}, but it also has an analytical solution (it is obvious, that we can find such $C$, $Q$ and $\kappa$). Comparing the numerical solution with the analytical one, we can estimate, how accuate our numerical scheme is.
+ \par In the code we use following formulas for $C$, $Q$ and $\kappa$:
+ \begin{equation*}
+C(T) = C_{0}T, \quad \kappa(T) = \kappa_{0}T, \quad Q(T) = Q_{0}T^{2},
+\end{equation*}
+where $C_{0}$, $\kappa_{0}$ and $Q_{0}$ are constants. They equal $10^{12}$, $10^{12}$ and $10$ respectively, but can be changed, if needed.
+\par The analytical solution has the following form:
+ \begin{equation*}
+T(r,t) = T_{0}e^{-\gamma t}\left(\frac{sin kr}{kr}\right)^{\frac{1}{2}},
+\end{equation*}
+where $T_{0}$ - the initial temperature of NS, $k = \frac{\pi}{R}$ and
+\begin{equation*}
+\gamma = \frac{\frac{1}{2}\kappa_{0}k^{2} + Q_{0}}{C_{0}}.
+\end{equation*}
+\section{The code structure}
+\par The code contains \textbf{main.py} file and \textbf{13 modules} divided into 5 groups.  Proper description for each module can be found on the last two pages of the document.
+\newpage
+\begin{table} [p]
+\caption{Code files.}
+\begin{center}
+\begin{tabular}{| l | l | l | l | l |}
+  \hline
+  \hline
+ \textbf{ computation} & \textbf{control} & \textbf{other} & \textbf{data} & \textbf{physics} \\
+  \hline
+  PDFsolver.py  & constants.py & routines.py & loaddata.py & heatcapacity.py\\
+  analytical test.py & manager.py & plot.py & & neutrino.py \\
+  & & & & thermalconductivity.py \\
+  & & & & sf\_gap.py \\
+  & & & & tite.py \\
+  & & & & physics.py \\
+  \hline
+  \hline
+\end{tabular}
+\end{center}
+\label{tab:1}
+\end{table}
+\begin{table} [p]
+\caption{Computation}
+\begin{center}
+\begin{tabular}{|  p{3.8cm} | p{13cm} |}
+  \hline
+   PDFsolver.py  & Contains three numerical algorithm, which were mentioned above (KNA, BEM, IPA). Here the mesh is created. Equation \ref{eq:2} is solved here. \\ \hline
+   analytical test.py & Contains all we have mentioned in paragraph \ref{Analytical test}. \\    \hline
+   \end{tabular}
+\end{center}
+\label{tab:2}
+\end{table}
+\begin{table} [p]
+\caption{Control}
+\begin{center}
+\begin{tabular}{|  p{3.8cm}  | p{13cm} |}
+  \hline
+   constants.py   & Contains physical constants, which are needed in numerical computation.\\ \hline
+   manager.py  & \textbf{The code control panel}. \\   \hline
+   \end{tabular}
+\end{center}
+\label{tab:3}
+\end{table}
+\begin{table} [p]
+\caption{Other}
+\begin{center}
+\begin{tabular}{|  p{3.8cm} | p{13cm} |}
+  \hline
+   routines.py   & Contains set of routines to make the code be more understandable. Contains Thomas algorithm to solve a system with a tridiagonal matrix.\\ \hline
+   plot.py  & Contains functions, which plot the input data. \\    \hline
+   \end{tabular}
+\end{center}
+\label{tab:4}
+\end{table}
+\newpage
+\begin{table} [p]
+\caption{ Data}
+\begin{center}
+\begin{tabular}{|  p{3.8cm} | p{13cm} |}
+  \hline
+   loaddata.py   & Loads all the input data. Interpolates loaded data to create functions (except for $C$, $\tilde{Q}$, $\kappa$) needed to solve equation \ref{eq:2}.  loaddata.py requires the following input data files: \\ \hline
+   effmass.dat  & Data file with the effective masses of baryons. \\ \hline
+   npsf.dat & Data file with the reduction factors for double superfluidity.  \\ \hline
+   model.dat & Data file with the NS model data. We have three different models of NS.   \\ \hline
+   tite.dat & Data file with Ti-Te relation. Firstly it is created in tite.py and is read in loaddata.py afterward.  \\ \hline
+   \end{tabular}
+\end{center}
+\label{tab:5}
+\end{table}
+\begin{table} [p]
+\caption{Physics}
+\begin{center}
+\begin{tabular}{|  p{3.8cm} | p{13cm} |}
+  \hline
+   heatcapacity.py   & Computes heat capacity. \\ \hline
+   neutrino.py  & Computes neutrino luminosity.\\ \hline
+   thermalconductivity.py  & Computes thermal conductivity. \\ \hline
+    sf\_gap.py & Computes energy gaps for singlet and triplet superfluid states.  \\ \hline
+   tite.py & Creates Ti-Te relation for a spesific NS model, magnetic field and mass of accreted envelope. \\ \hline
+   physics.py & Set of initialization routines. Creates $C$, $\tilde{Q}$, $\kappa$ to be functions only of density $\rho$ and temperature $T$ for a specific NS model. Can write out tables with such relations for $C$, $\tilde{Q}$, $\kappa$. \\ \hline
+   \end{tabular}
+\end{center}
+\label{tab:6}
+\end{table}
+\newpage
+\section{Time step}
+\par We set time step $dt$ by hand in manager.py file. It varies throughout the simulation. We have one restriction on $dt$: in paragraph \ref{Numerical scheme} the values on the right hand side of the matrix-vector equation have to be all positive. It is easy to see, that if we increase dt, they will become negative eventually. The code will be terminated, if such thing happens.
+\section{How to launch the code}
+\par  First of all, you need to set the initial parameters you want in manager.py. There you can choose NS model, set initial temperature, partition parameters, time, when simulation ends, or temperature, below which the simulation ends, and so on. In that file everything is commented, so it is easy enough to find, what you are looking for.
+\par After you have made the first step, you need to open main.py file. There you firstly use \textbf{data\_init()} function to initialize all the parameters needed in the simulation and load necessary input data. Then \textbf{main()} function is required to start off the simulation. If one would like to visualize the output data, \textbf{show\_cooling\_curves()} function should be used at the end. So, you write \\ \\
+  \textbf{data\_init()}  \\
+    \textbf{main()} \\
+     \textbf{ show\_cooling\_curves()} \\ \\
+    and run main.py.  \\
+    \par In order to launch analytical test procedure, one should use \textbf{test\_starter()} in the same-named file. \\
+    \par If something goes wrong, the code will let you know via terminal. \\
+    \par Have a nice day!
+\end{document}
