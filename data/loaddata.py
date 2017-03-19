@@ -17,7 +17,6 @@ from sys import exit
 from physics import sf_gap
 from scipy import interpolate
 
-
 # --This function creates output files, in which cooling data will be written-
 def create_output_files():
     
@@ -29,12 +28,12 @@ def create_output_files():
 
 
 # -----------This blog contains data for specific neutron star model----------
-def star_model_data_init():
+def star_model_data_init(file = model_file):
 
     global _g_surface, _star_model, _rho, _radii, _mass, _Phi, _nb, _ne, _nm, _nm_smooth, _pressure
 
     try:
-        temp = open(model_file, 'r')
+        temp = open(file, 'r')
     except(IOError):
         print('Star_model file is not found. \n')
         print('Simulation is terminated.')
@@ -43,7 +42,7 @@ def star_model_data_init():
     _g_surface = float(temp.readline().split()[1])
     temp.close()
 
-    _star_model = numpy.loadtxt(model_file, skiprows=2)
+    _star_model = numpy.loadtxt(file, skiprows=2)
 
     _rho = interpolate.interp1d(numpy.log(_star_model[:, 1] * 1e5), numpy.log(_star_model[:, 3]), kind='linear')
     _pressure = interpolate.interp1d(numpy.log(_star_model[:, 1] * 1e5), numpy.log(_star_model[:, 2]), kind='linear')
@@ -53,6 +52,11 @@ def star_model_data_init():
     _nb = interpolate.interp1d(numpy.log(_star_model[:, 3]), _star_model[:, 5], kind='linear')
     _ne = interpolate.interp1d(numpy.log(_star_model[:, 3]), _star_model[:, 6], kind='linear')
     _nm = interpolate.interp1d(numpy.log(_star_model[:, 3]), _star_model[:, 7], kind='linear')
+
+    rho_eff = numpy.concatenate((_star_model[:158, 3],_star_model[212:,3]))
+    mu_eff = numpy.concatenate((_star_model[:158, 7],_star_model[212:,7]))
+    _nm_smooth = interpolate.interp1d(numpy.log(rho_eff),mu_eff, kind='linear')
+
 
 
 def g_surface():  # surface gravity in 10^14 cm/s^2
@@ -89,7 +93,7 @@ def ne(a):
     return _ne(a)
 
 def nm(a):
-    return _nm(a)
+    return _nm_smooth(a)
 
 
 # ---------------reading data that provides Te(Ti) dependence-----------------

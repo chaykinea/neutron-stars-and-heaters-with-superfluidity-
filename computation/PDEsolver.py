@@ -20,7 +20,7 @@ def init():
     # --------------------------------------- mesh ----------------------------------------
     # -------------------------------------------------------------------------------------
     if (rho_vary):
-        Rho = numpy.logspace( numpy.log10(rho_max),
+        Rho = numpy.logspace( numpy.log10(loaddata.star_model()[2,3]),
                               numpy.log10(rho_min), Nzones + 1)  # density on cells' boundaries
     else:
         Rho = numpy.logspace( numpy.log10(loaddata.star_model()[2,3]),
@@ -68,7 +68,7 @@ def init():
 
 def time_derivative_init():               
 
-    global A, B, C_coef, kappa_coef, L_ph_coef, T_loc
+    global A, B, C_coef, kappa_coef, L_ph_coef, T_loc, H_loc
 
     A = numpy.zeros((Nzones,3))
     B = numpy.zeros(Nzones)
@@ -78,6 +78,7 @@ def time_derivative_init():
     L_ph_coef  = 4*pi*r_b[-1]*r_b[-1]*sigma*numpy.exp(2*loaddata.Phi(r_b[-1]))
 
     T_loc = numpy.exp(-loaddata.Phi(r_b[-1]))
+    H_loc = numpy.exp(2*loaddata.Phi(r))
     routines.Tri_diag_matrix_solver_init(Nzones)
 
 
@@ -231,13 +232,15 @@ def source_initialization(duration,power,Left,Right):
 
     R_L_computator(Left,Right)
 
-    global S, D
+    global S, D, H_0
 
     D = duration*yrtosec
     S = numpy.zeros(Nzones)
+    H_0 = power
 
     for i in range(L,R):
-        S[i] = power
+        #S[i] = power
+        S[i] = 1e17
         
         
 def R_L_computator(Left,Right):
@@ -263,7 +266,7 @@ def R_L_computator(Left,Right):
         exit(0)
 
     print ('Left source boundary (number of element) = %i, Right source boundary = %i, '
-           'Number of elements in the star = %in' % (L, R, N+1))
+           'Number of elements in the star = %i' % (L, R, N+1))
 
     R += 1                                                    
 
@@ -280,7 +283,7 @@ def source_visualisation(source_number):
     plt.xlabel('Density',fontsize=24)
     plt.title('Source placement in the star',fontsize=24)
     plt.legend(loc=4)
-    plt.savefig('output/source_placement_' + str(source_number) + 'pdf')
+    plt.savefig('output/source_placement_' + str(source_number) + '.pdf',format='pdf')
 
 
 def time_step_corrector(dt, t, time_point, error, error_min):
@@ -290,7 +293,10 @@ def time_step_corrector(dt, t, time_point, error, error_min):
     while (t/yrtosec < time_point and (t+dt)/yrtosec > time_point):
         number_of_iterations += 1
         error -= 1
+        print(error)
         dt = time_steps[error]
+        if error <= 1:
+            break
 
     if (number_of_iterations>0):
 
@@ -306,7 +312,7 @@ def T_update_source(T,T_func,dt):
     C_temp = C(T_func,rho_r)
     kappa_temp = k(T_b,Rho[1:N+1])
 
-    B = T - dt*(Q(T,rho_r)-S*f(t))/C_temp
+    B = T - dt*(Q(T,rho_r)-S*f(t)*H_loc)/C_temp
     B[N] -= dt*C_coef[N]/C_temp[N] * L_ph_coef*numpy.power(loaddata.T_e(T_func[N]*T_loc),4)
 
     A[0,2] = dt*C_coef[0]/C_temp[0]*kappa_coef[0]*kappa_temp[0]
@@ -322,7 +328,7 @@ def T_update_source(T,T_func,dt):
 
     for i in range(1,N):
         if B[i] < 0:
-            print ('dt is too large. Simulation is terminated.')
+            print('dt is too large. Simulation is terminated.')
             if (t<0.1*yrtosec):
                 print('current dt value = %-8.1e sec' % dt)
             else:
@@ -336,12 +342,17 @@ def solve_PDE_with_source(source_number,source_number_max):
 
     global t, dt, T, time_step_counter_source, time_step_counter, T_save, t_save, D,S
 
-    Temperature_profile_data_source_on      = numpy.zeros((len(t_source_points)+1,Nzones))
-    Temperature_profile_data_source_on[0,:] = rho_r
+    Temperature_profile_data_source_on      = numpy.zeros((len(t_points_save_data)+1,Nzones))
+    Neutrino_profile_data_source_on         = numpy.zeros((len(t_points_save_data)+1,Nzones))
+    Flux_profile_data_source_on             = numpy.zeros((len(t_points_save_data)+1,Nzones-1))
 
-    snapshot   = numpy.logspace(-1, numpy.log10(turn_on_time*yrtosec), N_output)
-    snapshot_2 = numpy.logspace(numpy.log10(turn_on_time*yrtosec+1), numpy.log10((turn_on_time+10)*yrtosec), N_output)
-    snapshot_3 = numpy.logspace(numpy.log10((turn_on_time+10)*yrtosec), numpy.log10(t_source_max*yrtosec), N_output)
+    Temperature_profile_data_source_on[0,:] = rho_r
+    Neutrino_profile_data_source_on[0,:]    = rho_r
+    Flux_profile_data_source_on[0,:]        = Rho[1:-1]
+
+    snapshot   = numpy.logspace(-1, numpy.log10(turn_on_time*yrtosec), N_output*2)
+    snapshot_2 = numpy.logspace(numpy.log10(turn_on_time*yrtosec), numpy.log10((turn_on_time+10)*yrtosec), N_output*4) 
+    snapshot_3 = numpy.logspace(numpy.log10((turn_on_time+10)*yrtosec), numpy.log10(t_source_max*yrtosec), N_output*2) 
     snapshot   = numpy.concatenate([snapshot,snapshot_2[1:],snapshot_3[1:]])
 
     snapshot_counter         = 0
@@ -349,7 +360,9 @@ def solve_PDE_with_source(source_number,source_number_max):
     dt_source_on_off_switch  = 0
     time_step_counter_source = 0
 
-    temp_output_file =  open('output/file_' + str(source_number) + '_cooling.dat', 'wb')
+    data_save_counter        = 0
+
+    temp_output_file =  open('output/cooling' + name + str(source_number) + '.dat', 'wb')
 
     while snapshot_counter < len(snapshot):
 
@@ -360,7 +373,7 @@ def solve_PDE_with_source(source_number,source_number_max):
                 dt_source_on_off_switch = 1
                 dt,time_step_counter = time_step_corrector(dt, t, turn_on_time, time_step_counter, error_min)
 
-        if t >= turn_on_time*yrtosec:
+        if t >= turn_on_time_0*yrtosec:
             x = T_update_source(T,T,dt)
             T = T_update_source(T,x,dt)
         else:
@@ -384,25 +397,41 @@ def solve_PDE_with_source(source_number,source_number_max):
                                  t/yrtosec,
                                  T[-1]*numpy.exp(-loaddata.Phi(r_b[-1])),
                                  numpy.sum(4.*pi*numpy.power(r,2)*dr_b*numpy.exp(2*loaddata.Phi(r))*S*f(t)/relativity_sqrt(r)),
-                                 4.*pi*numpy.power(r_b[-1],2)*sigma*numpy.power(loaddata.T_e(T[-1]*numpy.exp(-loaddata.Phi(r[-1]))),4)*redshift*redshift])
+                                 numpy.sum(4.*pi*numpy.power(r,2)*dr_b*Q(T,rho_r)/relativity_sqrt(r)),
+                                 4.*pi*numpy.power(r_b[-1],2)*sigma*numpy.power(loaddata.T_e(T[-1]*numpy.exp(-loaddata.Phi(r[-1]))),4)*redshift*redshift,
+                                 numpy.sum(4.*pi*numpy.power(r,2)*dr_b*C(T,rho_r)/relativity_sqrt(r)*T)])
 
-            numpy.savetxt(temp_output_file, data.T, fmt='%1.8e')
+            numpy.savetxt(temp_output_file, data.T, fmt='%1.10e')
 
         if(not dt_source_on_off_switch):
             if time_step_counter<len(time_points):
-                if t/yrtosec > time_points[time_step_counter]:          
-                    dt = time_steps[time_step_counter]                            
+                if t/yrtosec > time_points[time_step_counter]:
+
+                    dt = time_steps[time_step_counter]
+                    time_step_counter += 1
+
                     T_save = T
                     t_save = t
-                    time_step_counter += 1
+
         else:
             if time_step_counter_source<len(t_source_points):
                 if t/yrtosec > t_source_points[time_step_counter_source]:
+
                     dt = t_source_steps[time_step_counter_source]
-                    Temperature_profile_data_source_on[time_step_counter_source+1,:] = T
                     time_step_counter_source += 1
+
                     T_save = T
                     t_save = t
+
+        if data_save_counter<len(t_points_save_data):
+            if t/yrtosec >= t_points_save_data[data_save_counter]:
+
+                Temperature_profile_data_source_on[data_save_counter+1,:] = T
+                Neutrino_profile_data_source_on[data_save_counter+1,:]    = Q(T,rho_r)*numpy.exp(-2*loaddata.Phi(r))
+                Flux_profile_data_source_on[data_save_counter+1,:]        = -kappa_coef*k(((T[:-1] + T[1:])/2),Rho[1:-1])*(T[1:] - T[:-1])
+
+                data_save_counter += 1
+
 
         if (t > t_source_max*yrtosec or T[-1]*numpy.exp(-loaddata.Phi(r_b[-1])) < T_min):
             print ('Simulation is terminated. One of the critical conditions is achieved [t > t max or T < T min.]\n')
@@ -410,8 +439,14 @@ def solve_PDE_with_source(source_number,source_number_max):
 
     temp_output_file.close()
 
-    output_file_source = open('output/file_' + str(source_number) + '.dat','wb')
-    numpy.savetxt(output_file_source, Temperature_profile_data_source_on.T, fmt='%1.6e')
+    output_file_source  = open('output/temperature' + name + str(source_number) + '.dat','wb')
+    output_file_source2 = open('output/neutrino' + name + str(source_number) + '.dat','wb')
+    output_file_source3 = open('output/flux' + name + str(source_number) + '.dat','wb')
+
+    numpy.savetxt(output_file_source , Temperature_profile_data_source_on.T, fmt='%1.6e')
+    numpy.savetxt(output_file_source2,    Neutrino_profile_data_source_on.T, fmt='%1.6e')
+    numpy.savetxt(output_file_source3,        Flux_profile_data_source_on.T, fmt='%1.6e')
+
     output_file_source.close()
 
 def re_init():
@@ -448,9 +483,46 @@ def time_step_control_source():
 
     return T_save
 
+'''
 def f(t):
 
     if(t>=turn_on_time*yrtosec and t<=(turn_on_time*yrtosec+D)):
-        return 1.
+        return numpy.power(numpy.sin(numpy.pi*(t - turn_on_time*yrtosec)/D),2)
     else:
         return 0.
+'''
+
+def params(time,source_name):
+
+    global name, turn_on_time_0, turn_on_time, t_source_max, t_source_points, t_source_steps, t_points_save_data
+
+    turn_on_time_0 = time
+    turn_on_time = turn_on_time_0 + 30000
+    t_source_max = 40000+5000
+    #t_source_max = turn_on_time + 100
+    name = source_name
+
+    t_source_points     = numpy.array([turn_on_time +0.01 ,turn_on_time + 0.1,turn_on_time + 1.,turn_on_time + 5., turn_on_time + 10.,
+                                   turn_on_time + 50., turn_on_time + 100., turn_on_time + 500., turn_on_time + 1000.])       # in years
+    t_source_steps      = [time_steps[error_min], time_steps[error_min]*10  , time_steps[error_min]*20 , time_steps[error_min]*50,
+                           #time_steps[error_min]*100 , time_steps[error_min]*300 , time_steps[error_min]*500,  time_steps[error_min]*1000,  time_steps[error_min]*2000]
+                           time_steps[error_min]*100 , time_steps[error_min]*300 , 5.e6, 5.e7, 5.e7]
+
+    t_points_save_data  = numpy.array([turn_on_time + 0.01, turn_on_time + 0.1, turn_on_time + 0.5, turn_on_time + 1., turn_on_time + 2.,
+                                       turn_on_time + 3.,   turn_on_time + 4.,  turn_on_time + 5,   turn_on_time + 6., turn_on_time + 7,
+                                       turn_on_time + 8,    turn_on_time + 9,   turn_on_time + 10,  turn_on_time + 11, turn_on_time + 12,
+                                       turn_on_time + 13,   turn_on_time + 14,  turn_on_time + 15,  turn_on_time + 16, turn_on_time + 17,
+                                       turn_on_time + 18,   turn_on_time + 19,  turn_on_time + 20,  turn_on_time + 21, turn_on_time + 22])
+
+
+def f(t):
+
+    global H_0
+
+    if(t>=turn_on_time_0*yrtosec):
+        if(t>=turn_on_time*yrtosec and t<=(turn_on_time*yrtosec+D)):
+            return 1 + (H_0-1) * numpy.power(numpy.sin(numpy.pi*(t - turn_on_time*yrtosec)/D),2)
+        else:
+            return 1.
+    else:
+        return 0.0

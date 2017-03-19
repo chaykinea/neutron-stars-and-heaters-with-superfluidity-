@@ -66,7 +66,8 @@ def tite_2(rho,g_s,rho_st):
 
     T_loc = numpy.logspace(5.2,6.71,50)
 
-    tite.write('tite updated\n')
+    p = [p_1(rho),p_2(rho),p_3(rho),p_4(rho),p_5(rho),p_6(rho),p_7(rho),p_8(rho),p_9(rho),p_10(rho),p_11(rho),p_12(rho),p_13(rho),p_14(rho)]
+    tite.write(str(p) + '\n')
     tite.write('log(rho_b) = %2.1f g/cm3, g_s = %1.4e cm/sec2\n' % (rho,g_s))
     tite.write('------------------------\n')
 

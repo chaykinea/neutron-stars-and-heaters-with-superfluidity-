@@ -14,21 +14,47 @@
 # (all per unit volume) for
 # specific neutron star model
 
-
 from physics           import heatcapacity
 from physics           import neutrino
 from physics           import thermalconductivity
 from data              import loaddata
-from control.manager   import *
 from control.constants import *
+from control.manager   import *
 
 import scipy.interpolate
 import numpy
 
+def add_params(SF=0,AT=0,A0=0,A1=0,A2=0,A3=0,BT=0,B0=0,B1=0,B2=0,B3=0,CT=0,C0=0,C1=0,C2=0,C3=0):
+
+    global coeffsnk0, coeffsnk1, coeffsnk2, coeffsnk3, coeffsnT0, \
+           coefftnk0, coefftnk1, coefftnk2, coefftnk3, coefftnT0, \
+           coeffspk0, coeffspk1, coeffspk2, coeffspk3, coeffspT0, \
+           SUPERFLUIDITY
+
+    SUPERFLUIDITY = int(SF)
+
+    coeffsnT0 = AT * 0.5669 * MeV_erg / kB
+    coeffsnk0 = A0
+    coeffsnk1 = numpy.sqrt(A1)
+    coeffsnk2 = A2
+    coeffsnk3 = numpy.sqrt(A3)
+
+    coefftnT0 = 0. * BT * 0.1187 * MeV_erg / kB
+    coefftnk0 = B0
+    coefftnk1 = numpy.sqrt(B1)
+    coefftnk2 = B2
+    coefftnk3 = numpy.sqrt(B3)
+
+    coeffspT0 = 0. * CT * 0.5669 * MeV_erg / kB
+    coeffspk0 = C0
+    coeffspk1 = numpy.sqrt(C1)
+    coeffspk2 = C2
+    coeffspk3 = numpy.sqrt(C3)
+
 # critical temperatures in K of neutron triplet and singlet superfluidity 
 def _Tcn(nn):
 
-    kf=pow(3.*pi*pi*nn, 1./3.)
+    kf=numpy.power(3.*pi*pi*nn, 1./3.)
     if ( kf<= coefftnk0 or kf>= coefftnk2 ):
         Tc=0.0
     else:
@@ -63,7 +89,7 @@ def _Tcp(rho, np):
     return Tc
 
 
-def _Tcs(nn):
+def _Tcs(nn,rho):
 
     if (coeffsnk2 < 0.0):
         Tcs = coeffsnT0
@@ -72,9 +98,13 @@ def _Tcs(nn):
         if (kf <= coeffsnk0 or kf >= coeffsnk2 ):
             Tcs = 0.0
         else:
-            a = (kf-coeffsnk0)*(kf-coeffsnk0)
-            b = (coeffsnk2-kf)*(coeffsnk2-kf)
-            Tcs = coeffsnT0*a/(a+coeffsnk1*coeffsnk1)*b/(b+coeffsnk3*coeffsnk3)
+            if(rho>neutron_drip):
+                a = (kf-coeffsnk0)*(kf-coeffsnk0)
+                b = (coeffsnk2-kf)*(coeffsnk2-kf)
+                Tcs = coeffsnT0*a/(a+coeffsnk1*coeffsnk1)*b/(b+coeffsnk3*coeffsnk3)
+            else:
+                Tcs = 0.0
+
 
     Tcs = Tcs + 1.0e-6
 
@@ -188,7 +218,7 @@ def TableCreator():
             nb_, nn_, ne_, Z, A, Anuc, Vion = _CrustData(rho[i], nb[i], nn[i],ne[i])
             Tc_nt=_Tcn(nn[i])
             Tc_p=_Tcp(rho[i],np[i])
-            Tc_ns = _Tcs(nn[i])
+            Tc_ns = _Tcs(nn[i],rho[i])
 
             for j in range (0,T_table_N):
 
@@ -257,4 +287,3 @@ def k(a, b):                                                     # thermal condu
 
 def Q(a, b):                                                     # neutrino emissivity(temperature, density)
     return numpy.exp(log_Q(numpy.log(a), numpy.log(b)))
-

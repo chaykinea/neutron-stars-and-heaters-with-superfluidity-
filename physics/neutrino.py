@@ -145,6 +145,7 @@ def _Qcooper(T, nn, np, Tc_nt, Tc_ns, Tc_p):
 
     if(T<Tc_ns):
         v1 = sf_gap._SingletGap(T/Tc_ns)                         # neutron singlet gap
+    v1=0
 
     if(T<Tc_nt):
         v2 = sf_gap._TripletGap(T/Tc_nt)                         # neutron triplet gap
@@ -187,7 +188,7 @@ def _Qcooper(T, nn, np, Tc_nt, Tc_ns, Tc_p):
           (routines.sqr(0.08) + routines.sqr(1.26)*(11./42. + routines.sqr(mp_eff))*
           routines.sqr(0.353/mp_eff)*numpy.power(np/n0,2./3.)))
 
-    return Qn+Qp
+    return Qn*0.8+Qp
 
 def _Qbremss_eZ(T, rho):
 
