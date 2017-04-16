@@ -51,7 +51,7 @@ N_output       = 2000                                          # number of data 
 # ----------------------------------------------------------------
 time_points    = [1e-7, 1.e-6, 1.e-3, 1.e-2, 1.e-1, 1.e0, 1.e1, 1.e2, 3.e2, 1.e3, 2.e3, 1.e5, 1.e6] # points in time where we change timestep and write T(rho) data into file
 #time_steps     = [10,  1.e2, 4.e2, 1.e4, 3.e4, 1.e5, 3.e5, 1.e6, 5.e6, 1.e8,  1.e8, 1.e8,1.e10]  # timestep values
-time_steps     = [10,  1.e2, 5.e3, 1.e4, 3.e4, 1.e5, 1.e6, 1.e7, 1.e8,  1.e8, 1.e8,1.e10]  # timestep values
+time_steps     = [10,  1.e2, 5.e3, 1.e4, 3.e4, 1.e5, 1.e6, 1.e7, 1.e7,  1.e7, 1.e7,1.e10]  # timestep values
 # ----------------------------------------------------------------
 
 

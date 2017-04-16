@@ -65,7 +65,6 @@ def main():
                                models['neutron_triplet'][nt[external_param[4]]],
                                models['proton_singlet'][ps[external_param[5]]]])
 
-        #print('Turn on time:', time_roots[external_param[3]],' yr\n')
         print('Superfluidity parameters for simulation:\n')
         print(ns[external_param[3]],np.round(params[1:6],2))
         print(nt[external_param[4]],np.round(params[6:11],2))
@@ -107,12 +106,9 @@ def main():
 
         if external_param[2]!=0:
             file_name = '_' + ns[external_param[3]] + '_'
-            #file_name = '_' + ns[external_param[3]] + '_' + nt[external_param[4]] + '_' + ps[external_param[5]] + '_'
-            #PDEsolver.params(time=time_roots[external_param[3]], source_name=file_name)
             PDEsolver.params(time=10000, source_name=file_name)
         else:
             file_name = '_SF0_'
-            #PDEsolver.params(time=time_roots[external_param[3]], source_name=file_name)
             PDEsolver.params(time=10000, source_name=file_name)
 
         for simulation_number in range(external_param[0],external_param[1]):
@@ -123,10 +119,9 @@ def main():
                                             left_boundary[simulation_number],right_boundary[simulation_number])
             if(source_visualise):
                 PDEsolver.source_visualisation(simulation_number)
-            PDEsolver.solve_PDE_with_source(simulation_number,external_param[1])
+            PDEsolver.solve_PDE_with_source(simulation_number, external_param[1])
 
     else:
-
         #output_1, output_2 = loaddata.create_output_files()
 
         if external_param[2]!=0:
@@ -154,42 +149,6 @@ def main():
 
     print (' ')
     print ('calculation time: %3.5f sec' % (stop - start))
-
-
-def generate_cfg():
-
-    cfg_file = open('data/config.dat', 'wb')
-
-    loaddata.star_model_data_init()
-
-    rho_1 = 1e11
-    rho_2 = 1e12
-
-    V = lambda rho_1, rho_2: 4*numpy.pi/3 * ( numpy.power(loaddata.radii(rho_1),3) - numpy.power(loaddata.radii(rho_2),3))
-    rho_f = lambda r: numpy.power(r,2)/numpy.sqrt(1 - (2*G*loaddata.mass(r)/c/c/r))
-    V_prop = lambda rho_1, rho_2: 4*numpy.pi*integrate.quad(rho_f,loaddata.radii(rho_2),loaddata.radii(rho_1))[0]
-
-    V_const = V(rho_1,rho_2) # reference volume (corresponds to rho1 = 1e12, rho2 = 1e13)
-
-    rho_1_array  = numpy.array([1e10,5e10,1e11,5e11,1e12,5e12,1e13])
-    V_array      = numpy.array([V_const/32,V_const/16,V_const/8,V_const/4,V_const/2,V_const,V_const*2])
-    Power_array  = numpy.array([1e17,5e17,1e18,5e18,1e19,5e19,1e20])
-    Period_array = numpy.array([1e-1,5e-1,1e0,5e0,1e1,5e1,1e2,5e2,1e3])
-
-    for i in range(0,len(rho_1_array)): # Volume
-
-        rho_2_array = loaddata.rho( numpy.power((4*numpy.pi/3*numpy.power(loaddata.radii(rho_1_array[i]),3) - V_array[-2])*3/numpy.pi/4,1/3) )
-
-        for j in range(0,len(Power_array)): # Power
-
-            for k in range(0,len(Period_array)):
-
-                A = numpy.vstack([rho_2_array,rho_1_array[i],Power_array[j],Period_array[k]])
-                numpy.savetxt(cfg_file, A.T, fmt='%1.6e')
-
-        print(V(rho_1_array[i],rho_2_array))
-        print(V_prop(rho_1_array[i],rho_2_array))
-        print(rho_2_array)
 
 
 models =  {'neutron_singlet': {'AWP2' : [  28, 0.20,   1.5,  1.7,   2.5],
@@ -222,8 +181,6 @@ models =  {'neutron_singlet': {'AWP2' : [  28, 0.20,   1.5,  1.7,   2.5],
                                'TToa' : [ 2.1,  1.1,  0.60,  3.2,   2.4],
                                'NONE' : [ 0.0,  1.1,  0.60,  3.2,   2.4]}}
 
-time
-#generate_cfg()
 data_init()
 main()
 

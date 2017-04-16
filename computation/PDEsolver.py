@@ -227,21 +227,30 @@ def time_step_control():
 # -----------------------------------------------------HEAT-SOURCE-----------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------------------
 
-
+r_0 = 1.20413015e+06 # cm
+sigma_g = 4.38291763e+03 # cm
+H_f = lambda r: 1.66225679807e16 + 6.39198181e+04 * 1e17 * numpy.exp(-(r-r_0)**2/sigma_g**2 / 2)/numpy.sqrt(2*numpy.pi*sigma_g**2 ) # M_dot = 1e-9 M_solar/yr
+'''
+r_0 = 1.21161929e+06 # cm
+sigma_g = 2.68581589e+03  # cm
+H_f = lambda r: 3.80131342314e16 +  6.64638989e+04 * 1e17 * numpy.exp(-(r-r_0)**2/sigma_g**2 / 2)/numpy.sqrt(2*numpy.pi*sigma_g**2 )
+'''
 def source_initialization(duration,power,Left,Right):
 
     R_L_computator(Left,Right)
 
     global S, D, H_0
 
-    D = duration*yrtosec
+    #D = duration*yrtosec
+    D = duration
     S = numpy.zeros(Nzones)
     H_0 = power
 
     for i in range(L,R):
-        #S[i] = power
-        S[i] = 1e17
-        
+        #  S[i] = 1e17  steps from 1 to 6
+        S[i] = H_0 * H_f(r[i]) #  step 7
+        print(rho_r[i], r[i]/1e6, H_f(r[i]))
+
         
 def R_L_computator(Left,Right):
 
@@ -496,10 +505,19 @@ def params(time,source_name):
 
     global name, turn_on_time_0, turn_on_time, t_source_max, t_source_points, t_source_steps, t_points_save_data
 
+
+    # ENERGY RELEASES
+    '''
     turn_on_time_0 = time
     turn_on_time = turn_on_time_0 + 30000
     t_source_max = 40000+5000
     #t_source_max = turn_on_time + 100
+    '''
+
+    # ACCRETION
+    turn_on_time_0 = 1e3
+    turn_on_time = turn_on_time_0 + 3e3
+    t_source_max = turn_on_time + 20
     name = source_name
 
     t_source_points     = numpy.array([turn_on_time +0.01 ,turn_on_time + 0.1,turn_on_time + 1.,turn_on_time + 5., turn_on_time + 10.,
@@ -514,7 +532,8 @@ def params(time,source_name):
                                        turn_on_time + 13,   turn_on_time + 14,  turn_on_time + 15,  turn_on_time + 16, turn_on_time + 17,
                                        turn_on_time + 18,   turn_on_time + 19,  turn_on_time + 20,  turn_on_time + 21, turn_on_time + 22])
 
-
+# ENERGY RELEASES
+'''
 def f(t):
 
     global H_0
@@ -524,5 +543,21 @@ def f(t):
             return 1 + (H_0-1) * numpy.power(numpy.sin(numpy.pi*(t - turn_on_time*yrtosec)/D),2)
         else:
             return 1.
+    else:
+        return 0.0
+'''
+
+# ACCRETION
+def f(t):
+
+    if(t>=turn_on_time_0*yrtosec):
+        if t>=turn_on_time*yrtosec:
+            return 1 * numpy.exp(-(t - turn_on_time*yrtosec)/(D * 24 * 60 * 60))
+            #return 0.8 * numpy.exp(-(t - turn_on_time*yrtosec)/(D * 24 * 60 * 60)) + 0.2
+        else:
+            if (t - turn_on_time_0*yrtosec) < 1e3*yrtosec:
+                return numpy.sin(numpy.pi*(t - turn_on_time_0*yrtosec)/(2 * 1e3*yrtosec))
+            else:
+                return 1.0
     else:
         return 0.0

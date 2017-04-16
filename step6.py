@@ -213,7 +213,7 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
     plt.yticks(np.array([8,8.2,8.4,8.6,8.8,9]),fontsize=20)
     plt.xticks(np.array([9,10,11,12,13,14,15]),fontsize=20)
     if(rho==1):
-        plt.ylabel('$\\rm log \\thinspace$$ T^{\infty} \\thinspace \\rm K$',fontsize=24)
+        plt.ylabel('$\\rm log \\thinspace$$ T e^{\\Phi} \\thinspace \\rm K$',fontsize=24)
     plt.setp(ax1.get_xticklabels(), visible=False)
     plt.xlim(9,15)
 
@@ -247,9 +247,9 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
         idx += 1
 
     if rho==1:
-        plt.text(12.45, 8.5, '$T^{\\infty} < T_{\\rm cr}^{\\infty}$', fontsize=23)
+        plt.text(12.45, 8.5, '$T < T_{\\rm cr}$', fontsize=23)
     elif rho==2:
-        plt.text(13.11, 8.5, '$T^{\\infty} < T_{\\rm cr}^{\\infty}$', fontsize=23)
+        plt.text(13.11, 8.5, '$T < T_{\\rm cr}$', fontsize=23)
         plt.plot([-10,-20], [-10,-20], lw=thickness[4], color='black', dashes=dashes[4,:], label='$t = 15.0 \\rm \\thinspace yr$')
         plt.plot([-10,-20], [-10,-20], lw=thickness[3], color='black', dashes=dashes[3,:], label='$t = 3.0 \\rm \\thinspace yr$')
         plt.plot([-10,-20], [-10,-20], lw=thickness[2], color='black', dashes=dashes[2,:], label='$t = 0.5 \\rm \\thinspace yr$')
@@ -257,7 +257,7 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
         plt.plot([-10,-20], [-10,-20], lw=thickness[0], color='black', dashes=dashes[0,:], label='$t = 0.0 \\rm \\thinspace yr$')
         plt.legend(loc='upper left',fontsize=20)
     else:
-        plt.text(13.11, 8.5, '$T^{\\infty} < T_{\\rm cr}^{\\infty}$', fontsize=23)
+        plt.text(13.11, 8.5, '$T < T_{\\rm cr}$', fontsize=23)
 
         plt.plot([-10,-20], [-10,-20], lw=thickness[4], color='black', dashes=dashes[4,:], label='$t = 15.0 \\rm \\thinspace yr$')
         plt.plot([-10,-20], [-10,-20], lw=thickness[3], color='black', dashes=dashes[3,:], label='$t = 3.0 \\rm \\thinspace yr$')
@@ -279,7 +279,7 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
         plt.yticks(np.array([8,8.1,8.2,8.3,8.4,8.5,8.6]),fontsize=20)
     else:
         plt.yticks(np.array([8,8.2,8.4,8.6,8.8,9]),fontsize=20)
-        plt.ylabel('$\\rm log \\thinspace$$ T^{\infty} \\thinspace \\rm K$',fontsize=24)
+        plt.ylabel('$\\rm log \\thinspace$$ T e^{\\Phi}\\thinspace \\rm K$',fontsize=24)
     plt.xlabel('$\\rm log \\thinspace$$\\rho \\thinspace \\rm g \\thinspace cm^{-3}$',fontsize=24)
     plt.xticks(np.array([9,10,11,12,13,14,15]),fontsize=20)
     plt.xlim(9, 15)
@@ -310,16 +310,16 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
         idx += 1
 
     if rho==1:
-        plt.text(12.45, 8.5, '$T^{\\infty} < T_{\\rm cr}^{\\infty}$', fontsize=23)
+        plt.text(12.45, 8.5, '$T < T_{\\rm cr}$', fontsize=23)
     elif rho==3:
-        plt.text(12.5, 8.31, '$T^{\\infty} < T_{\\rm cr}^{\\infty}$', fontsize=23)
+        plt.text(12.5, 8.31, '$T < T_{\\rm cr}$', fontsize=23)
     else:
-        plt.text(13, 8.4, '$T^{\\infty} < T_{\\rm cr}^{\\infty}$', fontsize=23)
+        plt.text(13, 8.4, '$T < T_{\\rm cr}$', fontsize=23)
 
     plt.savefig('profile_2.pdf', format='pdf')
     plt.show()
 
-#temperature_profile_profile(rho=2)
+temperature_profile_profile(rho=2)
 #temperature_profile_profile()
 
 
@@ -390,76 +390,14 @@ def timedelay(Pow=5, dt=0):
     plt.ylim(1,10)
 
     plt.xlabel('$\\rm log \\thinspace$$\\rho_{1} \\thinspace \\rm g \\thinspace cm^{-3}$',fontsize=24)
-    plt.ylabel('$\Delta t_{\\rm r}$',fontsize=24)
+    plt.ylabel('$\Delta t_{\\rm r}$ $\\rm yr$',fontsize=24)
 
     #plt.text(11.45,6.8,'$ H_{\\rm{0}}/H_{\\rm{c}} = 10^{2}$', fontsize=23)
     plt.text(11.45,9,'$ M = 1.4 M_{\odot}$', fontsize=25)
 
     plt.legend(loc='upper left', fontsize=20)
-    #plt.savefig('timedelay.pdf', format='pdf')
+    plt.savefig('timedelay.pdf', format='pdf')
     plt.show()
 
-def kappa():
-
-    plot_style()
-    rho_values = np.array([1e10,10**10.5,1e11,10**11.5,1e12,10**12.5,1e13])
-    A = np.zeros((2,len(rho_values)))
-    idx = 0
-
-    T = np.loadtxt('tables_hm/file1.dat')
-    log_T = np.log(T)
-    rho = np.loadtxt('tables_hm/file2.dat')
-    log_rho = np.log(rho)
-    x, y = np.meshgrid(log_T, log_rho)
-    p = np.vstack([x.flatten(), y.flatten()]).T
-
-    C = np.loadtxt('tables_hm/file4.dat')
-
-    log_C = interpolate.LinearNDInterpolator(p, np.log(C).flatten())
-    heat_capacity = lambda a,b: np.exp(log_C(np.log(a), np.log(b)))
-    rho = np.logspace(10,np.log10(1e15),300)
-    for T in [1e8,1e9]:
-        plt.plot(np.log10(rho),np.log10(heat_capacity(T,rho)), dashes=[20,8],color='black',lw=3,zorder=3)
-        A[idx,:] = heat_capacity(T*np.ones(len(rho_values)),rho_values)
-        idx += 1
-
-    #print(A[0,:])
-    #print(A[0,:])
-    print(A[1,:]/A[0,:])
-    idx = 0
-
-    C = np.loadtxt('tables_hm/file44.dat')
-
-    log_C = interpolate.LinearNDInterpolator(p, np.log(C).flatten())
-    heat_capacity = lambda a,b: np.exp(log_C(np.log(a), np.log(b)))
-    rho = np.logspace(10,np.log10(1e15),300)
-    for T in [1e8,1e9]:
-        plt.plot(np.log10(rho),np.log10(heat_capacity(T,rho)), dashes=[20,8],color='black',lw=3,zorder=3)
-        A[idx,:] = heat_capacity(T*np.ones(len(rho_values)),rho_values)
-        idx += 1
-
-    #print(A[0,:])
-    #print(A[0,:])
-    print(A[1,:]/A[0,:])
-    plt.yticks(np.array([15,16,17,18,19,20,21]),fontsize=20)
-    plt.xticks(np.array([10,11,12,13,14,15]),fontsize=20)
-    plt.xlim(10,15)
-    #plt.ylim(14.9,27)
-
-    plt.xlabel('$\\rm log \\thinspace$$\\rho \\thinspace \\rm g \\thinspace cm^{-3}$',fontsize=24)
-    plt.ylabel('$\\rm log \\thinspace$$ C_{V}  \\thinspace \\thinspace \\rm erg \\thinspace K^{-1} cm^{-3}$',fontsize=24)
-    plt.show()
-
-#kappa()
-#flux()
-#timedelay()
-
-
-A = np.loadtxt('output/cooling_AWP2_0.dat')
-B = np.loadtxt('output/cooling_SF0_0.dat')
-
-plt.plot(A[:,1]-2e3,np.log10(A[:,5]))
-plt.plot(B[:,1]-2e3,np.log10(B[:,5]))
-plt.show()
 
 

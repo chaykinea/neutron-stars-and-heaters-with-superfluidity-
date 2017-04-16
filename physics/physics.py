@@ -39,12 +39,14 @@ def add_params(SF=0,AT=0,A0=0,A1=0,A2=0,A3=0,BT=0,B0=0,B1=0,B2=0,B3=0,CT=0,C0=0,
     coeffsnk2 = A2
     coeffsnk3 = numpy.sqrt(A3)
 
+    # TURNED OFF
     coefftnT0 = 0. * BT * 0.1187 * MeV_erg / kB
     coefftnk0 = B0
     coefftnk1 = numpy.sqrt(B1)
     coefftnk2 = B2
     coefftnk3 = numpy.sqrt(B3)
 
+    # TURNED OFF
     coeffspT0 = 0. * CT * 0.5669 * MeV_erg / kB
     coeffspk0 = C0
     coeffspk1 = numpy.sqrt(C1)
