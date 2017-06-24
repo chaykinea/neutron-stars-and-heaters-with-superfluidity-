@@ -245,7 +245,7 @@ def test_time_error_transient():
 
     plt.show()
 
-test_partition_error_constant()
+#test_partition_error_constant()
 #test_time_error_transient()
 #test_partition_error_transient()
 

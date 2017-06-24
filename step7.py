@@ -41,15 +41,40 @@ rho_2 = data[:, 0] * (1 + data[:, 2])
 y = data[:, 1]
 
 
-_star_model = np.loadtxt('data/model_rho9.dat', skiprows=2)
-_nb = interpolate.interp1d(np.log10(_star_model[:, 3]), _star_model[:, 5], kind='linear')
-_ne = interpolate.interp1d(np.log10(_star_model[:, 3]), _star_model[:, 6], kind='linear')
-_nm = interpolate.interp1d(np.log10(_star_model[:, 3]), _star_model[:, 7], kind='linear')
-_rho = interpolate.interp1d(np.log10(_star_model[:, 1] * 1e5), np.log10(_star_model[:, 3]), kind='linear')
-_pressure = interpolate.interp1d(np.log10(_star_model[:, 1] * 1e5), np.log10(_star_model[:, 2]), kind='linear')
-_radii = interpolate.interp1d(np.log10(_star_model[:, 3]), np.log10(_star_model[:, 1] * 1e5), kind='linear')
-_mass = interpolate.interp1d(np.log10(_star_model[:, 1] * 1e5), np.log10(_star_model[:, 0] * MSun), kind='linear')
-_Phi = interpolate.interp1d(np.log10(_star_model[:, 1] * 1e5), _star_model[:, 4], kind='linear')
+_star_model = np.loadtxt('data/BSK21_1.40.dat', skiprows=2)
+model_param = 1.40
+_nb = interpolate.interp1d(np.log10(_star_model[:, 3]), _star_model[:, 5], kind='linear', fill_value='extrapolate')
+_ne = interpolate.interp1d(np.log10(_star_model[:, 3]), _star_model[:, 6], kind='linear', fill_value='extrapolate')
+_nm = interpolate.interp1d(np.log10(_star_model[:, 3]), _star_model[:, 7], kind='linear', fill_value='extrapolate')
+_rho = interpolate.interp1d(np.log10(_star_model[:, 1] * 1e5), np.log10(_star_model[:, 3]), kind='linear', fill_value='extrapolate')
+_pressure = interpolate.interp1d(np.log10(_star_model[:, 1] * 1e5), np.log10(_star_model[:, 2]), kind='linear', fill_value='extrapolate')
+_radii = interpolate.interp1d(np.log10(_star_model[:, 3]), np.log10(_star_model[:, 1] * 1e5), kind='linear', fill_value='extrapolate')
+_mass = interpolate.interp1d(np.log10(_star_model[:, 1] * 1e5), np.log10(_star_model[:, 0] * MSun), kind='linear', fill_value='extrapolate')
+_Phi = interpolate.interp1d(np.log10(_star_model[:, 1] * 1e5), _star_model[:, 4], kind='linear', fill_value='extrapolate')
+
+t_MAXI = np.array([5.5, 16.1, 23.3, 31.9, 51.1, 85.4, 104.5, 134.9 ,  150.9,  291.8, 497.1])
+T_MAXI_model_II = np.array([308,  307,  298,  365,  276, 320, 252.6, 243.6 ,  241,  208,   184.3])
+err_MAXI = np.array([11, 4, 3, 7, 3, 5, 1, 1, 2, 2, 1.1])
+
+T_XTE = np.array([164.2, 159.5, 156.8, 150.0,  129.1,  159.3,  136.0,  126.3,  125.4,  129.6,  124.0,  123.9, 124.1])
+t_XTE = np.array([ 2.77, 10.63, 16.06, 49.31, 174.15, 225.54, 298.12, 430.89, 539.90, 592.50, 652.44, 705.20, 795.45])
+err_XTE = np.array([3.6,   2.5,   1.3,   1.2,    4.7,    2.0,    2.0,    3.1,    1.5,    2.2,    2.2,    2.0, 1.7])
+
+T_KS = np.array([103, 88, 76, 72, 70, 67, 70, 63.35])
+t_KS = np.array([51995.1, 52165.7, 52681.6, 52859.5, 53430.5, 53500.4, 53525.4, 54978.86]) - 51930.5
+err_KS = np.array([2.5, 2, 3, 4, 3 , 7.5, 3, 3])
+
+T_IGR = np.array([99.7, 91.5, 89.2, 84.8, 88.5, 84.6, 82.8])
+t_IGR = np.array([55609, 55680.5, 55810.5, 56060, 56187.5, 56228, 56340]) - 55556
+err_IGR = np.array([1.6, 1.5, 1.5, 1.5, 1.9, 2.0, 1.2])
+
+t_EXO = np.array([54755.5, 54776, 54886, 54908, 54992, 55013, 55306, 55364, 55489, 55745, 56505]) - 54714
+T_EXO = np.array([129.1, 126.1, 122.6, 120.0, 117.8, 115.5, 116.8, 116.2, 115.4, 117.6, 109.9])
+err_EXO = np.array([2.3, 2.2, 2.6, 2.0, 2.5, 2.2, 2.5, 1.9, 2.2, 2.2, 2.0])
+
+t_MXB = np.array([52197.8, 52563.2, 52712.2, 52768.9, 53560.0, 53576.7, 54586.37]) - 52159.5
+T_MXB = np.array([121, 85, 77 ,73, 58, 54, 56.16])
+err_MXB = np.array([2, 2, 1, 1.5, 3.5, 4.5, 1.5])
 
 def radii(a):  # radius(density)
     return np.power(10, _radii(np.log10(a)))
@@ -76,6 +101,7 @@ def f2(x,a,b,c,d):
 dV = lambda r: 4*np.pi*r*r/relativity_sqrt(r)
 V = lambda r1,r2: integrate.quad(dV,r1,r2)[0]
 
+
 def power():
 
     r_1 = radii(rho_1)
@@ -84,24 +110,33 @@ def power():
     Q_total = (y * 1e3 * from_ev_to_erg) * M_dot / Mb
     Q_total_cum = np.cumsum(Q_total)
 
-    param, mtrx = optimize.curve_fit(f2, r_1, Q_total_cum, p0=[6.39198181e+04,   1.20413015e+06,   4.38291763e+03,   2.60061730e-06])
-    print(param)
-
-    #param, mtrx = optimize.curve_fit(f2, r_1, Q_total_cum, p0=[  6.64642971e+04,   1.21161931e+06,   2.68584250e+03,   5.71917036e-06])
-    #print(param)
-
     rho_sample = np.linspace(9,14,1000)
-    print(param[3] * H_guess * param[0]/1e16)
+    r_sample = radii(np.power(10, rho_sample))
+    #param, mtrx = optimize.curve_fit(f2, r_1, Q_total_cum, p0=[6.49105274e+04,   1.21269574e+06,   3.71309773e+03,   3.13087696e-06])  # M 1.4
+    #print(param)
+    #print(param[3] * H_guess * param[0]/1e16)
 
-    r_0 = 1.20413015e+06 # cm
-    r_sample = radii(np.power(10,rho_sample))
-    sigma_g = 4.38291763e+03 # cm
-    H_f = lambda r: 1.66225679807e16 + 6.39198181e+04 * 1e17 * np.exp(-(r-r_0)**2/sigma_g**2 / 2)/np.sqrt(2*np.pi*sigma_g**2 )
+    r_0 = np.array(
+        [1.20413015e+06, 1.21000074e+06, 1.21203074e+06, 1.21269574e+06, 1.21353249e+06, 1.21448985e+06, 1.21486413e+06,
+         1.21161929e+06])
+    sigma_g = np.array(
+        [4.38291763e+03, 3.97737319e+03, 3.78693639e+03, 3.71309773e+03, 3.60523861e+03, 3.43057815e+03, 3.26194154e+03,
+         2.68581589e+03])
+    const_1 = np.array(
+        [1.66225679807e16, 1.86808408312e16, 1.98349866253e16, 2.03226874478e16, 2.10820556759e16, 2.2441279112e16,
+         2.39298439565e16, 3.80131342314e16])
+    const_2 = np.array(
+        [6.39198181e+04, 6.44242849e+04, 6.47562763e+04, 6.49105274e+04, 6.51666607e+04, 6.56611002e+04, 6.62462312e+04,
+         6.64638989e+04])
+    model_param_arr = np.array([1.40, 1.50, 1.55, 1.57, 1.60, 1.65, 1.70, 1.85])
 
-    #r_0 = 1.21161929e+06 # cm
-    #r_sample = radii(np.power(10,rho_sample))
-    #sigma_g = 2.68581589e+03  # cm
-    #H_f = lambda r: 3.80131342314e16 +  6.64638989e+04 * 1e17 * np.exp(-(r-r_0)**2/sigma_g**2 / 2)/np.sqrt(2*np.pi*sigma_g**2 )
+    r_0_f = interpolate.interp1d(model_param_arr, r_0)
+    sigma_g_f = interpolate.interp1d(model_param_arr, sigma_g)
+    const_1_f = interpolate.interp1d(model_param_arr, const_1)
+    const_2_f = interpolate.interp1d(model_param_arr, const_2)
+    H_f = lambda r: const_1_f(model_param) + const_2_f(model_param) * 1e17 * np.exp(
+        -(r - r_0_f(model_param)) ** 2 / sigma_g_f(model_param) ** 2 / 2) / np.sqrt(
+        2 * np.pi * sigma_g_f(model_param) ** 2)  # M_dot = 1e-9 M_solar/yr
 
     plot_style()
     plt.plot(rho_sample,H_f(r_sample)/1e17,ls='-',lw=3,c='r')
@@ -115,60 +150,112 @@ def power():
     check = np.zeros_like(rho_sample)
     for i in range(len(check)):
         check[i] = np.abs(np.trapz(H_f(r_sample[:i+1])*np.exp(2*_Phi(np.log10(r_sample[:i+1]))) * dV(r_sample[:i+1]), r_sample[:i+1]))
-
+    
+    aa = np.argmin(np.abs(np.power(10,rho_sample)-3e12))
+    bb = np.argmin(np.abs(np.power(10,rho_sample)-8e11)) 
+    print(10**rho_sample[aa])
+    print(10**rho_sample[bb])
+    aa_int = np.abs(np.trapz(H_f(r_sample[:aa+1])*np.exp(2*_Phi(np.log10(r_sample[:aa+1]))) * dV(r_sample[:aa+1]), r_sample[:aa+1]))
+    bb_int = np.abs(np.trapz(H_f(r_sample[:bb+1])*np.exp(2*_Phi(np.log10(r_sample[:bb+1]))) * dV(r_sample[:bb+1]), r_sample[:bb+1]))
+    print(aa_int)
+    print(bb_int)
+    print(3e1*aa_int)
+    print(6e1*bb_int)
+    
     plot_style()
-    plt.step(np.log10(data[:,0]), Q_total_cum/1e34,lw=3)
+    #plt.step(np.log10(data[:,0]), Q_total_cum/1e34,lw=3)
     plt.plot(rho_sample, check/1e34,lw=3,color='red')
-    plt.xlabel('$\\rm log \\thinspace \\rho $ $\\rm g \\thinspace cm^{-3}$',fontsize=22)
-    plt.ylabel('$\\rm Q_{< \\rho}/10^{34}$ $\\rm erg \\thinspace s^{-1}$',fontsize=22)
+    plt.xlabel('$\\rm log \\thinspace \\rho $ $\\rm g \\thinspace cm^{-3}$',fontsize=24)
+    plt.ylabel('$\\rm Q_{< \\rho}/10^{34}$ $\\rm erg \\thinspace s^{-1}$',fontsize=24)
     plt.xticks([9,10,11,12,13,14],fontsize=20)
     plt.yticks([0,2,4,6,8,10,12],fontsize=20)
+    plt.xlim(9,14)
+    plt.ylim(0,12)
     plt.savefig('fig1.pdf',format='pdf')
     plt.show()
+
+#power()
 
 
 def plot1():
     plot_style()
 
-    t_MAXI = np.array([5.5, 16.1, 23.3, 31.9, 51.1, 85.4, 104.5, 134.9 ,  150.9,  291.8, 497.1])
-    T_MAXI_model_II = np.array([308,  307,  298,  365,  276, 320, 252.6, 243.6 ,  241,  208,   184.3])
-    err_MAXI = np.array([11, 4, 3, 7, 3, 5, 1, 1, 2, 2, 1.1])
-
-    T_XTE = np.array([164.2, 159.5, 156.8, 150.0,  129.1,  159.3,  136.0,  126.3,  125.4,  129.6,  124.0,  123.9, 124.1])
-    t_XTE = np.array([ 2.77, 10.63, 16.06, 49.31, 174.15, 225.54, 298.12, 430.89, 539.90, 592.50, 652.44, 705.20, 795.45])
-    err_XTE = np.array([3.6,   2.5,   1.3,   1.2,    4.7,    2.0,    2.0,    3.1,    1.5,    2.2,    2.2,    2.0, 1.7])
-
     k_b = 8.617330350e-5
     config = np.loadtxt('data/config.dat')
-    for i,col in zip(range(0,2),['green','orange']):
+
+    for i in [4,7]:
+
         print(config[i,:])
-        #data2 = np.loadtxt('output/cooling_SF0_' + str(i) + '.dat')
-        data = np.loadtxt('output/cooling_GIPSF_' + str(i) + '.dat')
-        plt.plot((data[:, 1]-4e3)*365, data[:, 0]*k_b, lw=3, color=col, ls='-')
-        #plt.plot((data2[:, 1]-4e3)*365, data2[:, 0]*k_b, lw=3, color='red', ls='--')
+        data1 = np.loadtxt('output/cooling_AWP2_' + str(i) + '.dat')
+        data2 = np.loadtxt('output/cooling_GIPSF_' + str(i) + '.dat')
+        data3 = np.loadtxt('output/cooling_SCLBL_' + str(i) + '.dat')
+        data = np.loadtxt('output/cooling_SF0_' + str(i) + '.dat')
 
-    plt.scatter(t_MAXI, T_MAXI_model_II, s=100, color='magenta', marker='o',label='MAXI J0556–332')
-    plt.errorbar(x=t_MAXI, y=T_MAXI_model_II, yerr=err_MAXI, color='magenta', fmt=' ')
+        plt.plot((data1[:, 1]-1.00145e3)*365, data1[:, 0]*k_b, lw=3, color='red', ls='-',zorder=1)
+        plt.plot((data2[:, 1]-1.00145e3)*365, data2[:, 0]*k_b, lw=3, color='green', ls='-',zorder=1)
+        plt.plot((data3[:, 1]-1.00145e3)*365, data3[:, 0]*k_b, lw=3, color='blue', ls='-',zorder=1)
+        plt.plot((data[:, 1]-1.00145e3)*365, data[:, 0]*k_b, lw=4, color='black', dashes=(10,10),zorder=1)
 
-    plt.scatter(t_XTE, T_XTE, s=100, color='black', marker='^',label='XTE J1701–462')
-    plt.errorbar(x=t_XTE, y=T_XTE, yerr=err_XTE, color='black', fmt=' ')
+    plt.scatter(t_MAXI, T_MAXI_model_II, s=100, color='magenta', marker='o',label='MAXI J0556–332', zorder=2)
+    plt.errorbar(x=t_MAXI, y=T_MAXI_model_II, yerr=err_MAXI, color='magenta', fmt=' ', zorder=2)
+    
+    plt.plot([1,2], [1,2], lw=4, color='black', dashes=(10,10), label='No SF')
+    plt.plot([1,2], [1,2], lw=3, color='red', ls='-', label='AWP2')
+    plt.plot([1,2], [1,2], lw=3, color='green', ls='-', label='GIPSF')
+    plt.plot([1,2], [1,2], lw=3, color='blue', ls='-', label='SCLBL')
 
-    plt.plot([1,2], [1,2], lw=3, color='black', ls='-', label='cooling code')
 
-    plt.legend(loc='upper right',fontsize=20,scatterpoints=1)
-    plt.xscale('log')
-    plt.xticks([1,10,100,1000],fontsize=20)
-    plt.yticks([100,150,200,250,300,350],fontsize=20)
-    plt.ylim(100, 350)
+    plt.scatter(t_XTE, T_XTE, s=100, color='orange', marker='^',label='XTE J1701–462', zorder=2)
+    plt.errorbar(x=t_XTE, y=T_XTE, yerr=err_XTE, color='orange', fmt=' ',zorder=2)
+
+    plt.legend(loc='upper right',fontsize=18,scatterpoints=1,frameon=False)
+    #plt.xscale('log')
+    #plt.xticks([1,10,100,1000,10000],fontsize=20)
+    plt.xticks([-500,-250,0,250,500,750,1000], fontsize=20)
+    plt.yticks([125,150,175,200,225,250,275,300],fontsize=20)
+    plt.ylim(110, 280)
     plt.xlabel('$\\rm Days \\thinspace  \\thinspace  since  \\thinspace  \\thinspace  '
                'end \\thinspace  \\thinspace  of  \\thinspace  \\thinspace outburst$',fontsize=22)
     plt.ylabel('$\\rm kT^{\infty}_{s}$ $\\rm eV$',fontsize=22)
 
-    plt.xlim(1, 1e3)
-    plt.savefig('fig3.pdf',format='pdf')
+    plt.xlim(0,1000)
+    plt.savefig('fig_MAXI_XTE_linear.eps',format='eps')
 
     plt.show()
 
+plot1()
+
+def plot_new():
+    plot_style()
+
+    k_b = 8.617330350e-5
+    config = np.loadtxt('data/config.dat')
+
+    for i in [4]:
+        print(config[i,:])
+        data2 = np.loadtxt('output/temperature_SF0_' + str(i) + '.dat')
+        data = np.loadtxt('output/temperature_GIPSF_' + str(i) + '.dat')
+        for jj,col,lbl in zip([1, 4, 5, 9], ['red', 'orange', 'green', 'blue'], [0.0, 0.5, 1, 3]):
+            plt.plot(data[:,0],     data[:, jj]/1e8, '-',color=col, lw=3, label=str(lbl) + ' years')
+            plt.plot(data2[:, 0], data2[:, jj]/1e8,'--',color=col,lw=3)
+
+    plt.plot([1,2], [1,2], lw=5, color='black', ls='-', label='SF ON')
+    plt.plot([1,2], [1,2], lw=5, color='black', ls='--', label='SF OFF')
+
+    plt.legend(loc='upper right',fontsize=18,scatterpoints=1,frameon=False)
+    plt.xscale('log')
+    plt.xlabel('$\\rm \\rho \\thinspace g \\thinspace cm^{3} $',fontsize=22)
+    plt.ylabel('$\\rm \\tilde{T} $ $\\rm 10^{8} K$',fontsize=22)
+    plt.xticks([1e9,1e10,1e11,1e12,1e13,1e14,1e15], fontsize=20)
+    plt.yticks([1,2,3,4], fontsize=20)
+    plt.xlim(1e9,1e15)
+    plt.ylim(0.8, 2.2)
+    plt.text(2e10,1.8,'XTE',fontsize=23)
+    plt.savefig('XTE_temperature_profile.pdf',format='pdf')
+
+    plt.show()
+
+#plot_new()
 
 def plot2():
 
@@ -186,14 +273,16 @@ def plot2():
     ax.xaxis.set_minor_locator(x_minor_locator)
     ax.yaxis.set_minor_locator(y_minor_locator)
 
-    for i,col in zip(range(0,2),['green','orange']):
+    for i,col,lbl in zip([6,5,4],['green','red','blue'], ['MAXI model 2', 'MAXI model 1', 'XTE']):
+        print(i)
         data = np.loadtxt('output/cooling_GIPSF_' + str(i) + '.dat')
-        plt.plot((data[:, 1]-4e3)*365, np.log10(data[:, 3]), lw=3, color=col, ls='-')
+        plt.plot((data[:, 1]-1.00145e3)*365, np.log10(np.abs(data[:, 3])+1e-9), lw=3, color=col, ls='-',label=lbl)
     plt.setp(ax.get_xticklabels(), visible=False)
-    plt.ylim(30,37)
     plt.yticks([30,31,32,33,34,35,36,37],fontsize=18)
+    plt.ylim(34,37)
     plt.ylabel('$\\rm log \\thinspace L^{\infty}_{h}$ $\\rm erg \\thinspace s^{-1}$', fontsize=22)
-    plt.xlim(-500,2000)
+    plt.xlim(-532,1500)
+    plt.legend(loc='upper right', fontsize=18, frameon=False)
 
     axx = plt.subplot(2,1,2)
     x_minor_locator2 = AutoMinorLocator(5)
@@ -204,36 +293,32 @@ def plot2():
     axx.xaxis.set_minor_locator(x_minor_locator2)
     axx.yaxis.set_minor_locator(y_minor_locator2)
 
-    t_MAXI = np.array([5.5, 16.1, 23.3, 31.9, 51.1, 85.4, 104.5, 134.9 ,  150.9,  291.8, 497.1])
-    T_MAXI_model_II = np.array([308,  307,  298,  365,  276, 320, 252.6, 243.6 ,  241,  208,   184.3])
-    err_MAXI = np.array([11, 4, 3, 7, 3, 5, 1, 1, 2, 2, 1.1])
-
-    T_XTE = np.array([164.2, 159.5, 156.8, 150.0,  129.1,  159.3,  136.0,  126.3,  125.4,  129.6,  124.0,  123.9, 124.1])
-    t_XTE = np.array([ 2.77, 10.63, 16.06, 49.31, 174.15, 225.54, 298.12, 430.89, 539.90, 592.50, 652.44, 705.20, 795.45])
-    err_XTE = np.array([3.6,   2.5,   1.3,   1.2,    4.7,    2.0,    2.0,    3.1,    1.5,    2.2,    2.2,    2.0, 1.7])
-
     k_b = 8.617330350e-5
-    for i,col in zip(range(0,2),['green','orange']):
+    for i,col in zip(range(4,7),['blue', 'red','green']):
         data = np.loadtxt('output/cooling_GIPSF_' + str(i) + '.dat')
-        plt.plot((data[:, 1]-4e3)*365, data[:, 0]*k_b, lw=3, color=col, ls='-')
+        data2 = np.loadtxt('output/cooling_SF0_' + str(i) + '.dat')
+        plt.plot((data[:, 1]-1.00145e3)*365, np.log10(data[:, 5]), lw=3, color=col, ls='-')
+        plt.plot((data2[:, 1] -1.00145e3) * 365, np.log10(data2[:, 5]), lw=3, color=col, ls='--')
 
-    plt.scatter(t_MAXI, T_MAXI_model_II, s=100, color='magenta', marker='o',label='MAXI J0556–332')
-    plt.errorbar(x=t_MAXI, y=T_MAXI_model_II, yerr=err_MAXI, color='magenta', fmt=' ')
+    #plt.scatter(t_KS, T_KS, s=100, color='red', marker='s', label='KS 1731-260')
+    #plt.errorbar(x=t_KS, y=T_KS, yerr=err_KS, color='red', fmt=' ')
 
-    plt.scatter(t_XTE, T_XTE, s=100, color='black', marker='^',label='XTE J1701–462')
-    plt.errorbar(x=t_XTE, y=T_XTE, yerr=err_XTE, color='black', fmt=' ')
+    #plt.scatter(t_MXB, T_MXB, s=100, color='darkgreen', marker='D', label='MXB 1659−29')
+    #plt.errorbar(x=t_MXB, y=T_MXB, yerr=err_MXB, color='darkgreen', fmt=' ')
 
-    plt.xlim(-500,2000)
     plt.xticks([-500,0,500,1000,1500,2000],fontsize=18)
-    plt.yticks([100,150,200,250,300,350],fontsize=18)
-    plt.ylim(100, 350)
+    plt.xlim(-532,1500)
+    #plt.yticks([50,75,100,125,150],fontsize=18)
+    #plt.ylim(50, 150)
     plt.xlabel('$\\rm Days \\thinspace  \\thinspace  since  \\thinspace  \\thinspace  '
                'end \\thinspace  \\thinspace  of  \\thinspace  \\thinspace outburst$',fontsize=22)
-    plt.ylabel('$\\rm kT^{\infty}_{s}$ $\\rm eV$',fontsize=22)
-    plt.savefig('fig4.pdf',format='pdf')
+    #plt.ylabel('$\\rm kT^{\infty}_{s}$ $\\rm eV$',fontsize=22)
+    plt.yticks([32, 32.5, 33, 33.5, 34, 34.5, 35, 35.5, 36], fontsize=18)
+    plt.ylim(33.6, 35)
+    plt.ylabel('$\\rm log \\thinspace L_{s}^{\infty} \\thinspace erg \\thinspace s^{-1}$', fontsize=22)
+    plt.savefig('fig4_new.pdf',format='pdf')
     plt.show()
 
-plot1()
 #plot2()
 
 def plot3():
@@ -258,22 +343,27 @@ def plot4():
 
     plot_style()
 
-    for i,col,lb in zip(range(0,2),['green','orange'],['MAXI J0556–332','XTE J1701–462']):
+    for i,col,lb in zip(range(2,4),['blue','orange'],['KS 1731-260','MXB 1659−29']):
         data = np.loadtxt('output/cooling_GIPSF_' + str(i) + '.dat')
+        data2 = np.loadtxt('output/cooling_SF0_' + str(i) + '.dat')
         plt.plot((data[:, 1]-4e3)*365, np.log10(data[:, 5]), lw=3, color=col, ls='-',label=lb)
+        plt.plot((data2[:, 1] - 4e3) * 365, np.log10(data2[:, 5]), lw=3, color=col, ls='--')
 
     plt.xlim(-500,2000)
     plt.xticks([-500,0,500,1000,1500,2000],fontsize=18)
-    plt.yticks([33.5,34,34.5,35,35.5,36],fontsize=18)
-    plt.ylim(33.5,36)
+    plt.yticks([32,32.5,33,33.5,34,34.5,35,35.5,36],fontsize=18)
+    plt.ylim(32.3,34.2)
     plt.xlabel('$\\rm Days \\thinspace  \\thinspace  since  \\thinspace  \\thinspace  '
                'end \\thinspace  \\thinspace  of  \\thinspace  \\thinspace outburst$',fontsize=22)
     plt.ylabel('$\\rm log \\thinspace L_{s}^{\infty} \\thinspace erg \\thinspace s^{-1}$',fontsize=22)
     plt.legend(loc='upper right',fontsize=20)
-    plt.savefig('fig6.pdf',format='pdf')
+    plt.savefig('fig6_new.pdf',format='pdf')
     plt.show()
 
 #plot4()
+
+
+
 
 
 def f2(x,a,b,c,d):
@@ -283,3 +373,6 @@ def f2(x,a,b,c,d):
         r = np.linspace(r_0, x[i], 200)
         output[i] = H_guess * a * np.abs(np.trapz((stats.norm.pdf(x=r, loc=b, scale=c)+d)*dV(r)*np.exp(2*_Phi(np.log10(r))), r))
     return output
+
+
+

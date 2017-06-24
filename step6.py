@@ -70,7 +70,7 @@ def show_curves_1(Pow=4, dt=0, timeshift=4e4):
                 plt.plot([-10,-20], [-10,-20], '-', lw=3, color=colors[2], label=labels[2])
                 plt.plot([-10,-20], [-10,-20], '-', lw=3, color=colors[3], label=labels[3])
 
-        plt.legend(loc='upper right', fontsize=20)
+        plt.legend(loc='upper right', fontsize=20, frameon=False)
 
         plt.xticks(np.linspace(0,35,8),fontsize=22)
         plt.yticks(np.linspace(-4,3,8),fontsize=22)
@@ -85,7 +85,7 @@ def show_curves_1(Pow=4, dt=0, timeshift=4e4):
         plt.text(8,-1.3,'$\\rm SURFACE, \\thinspace M = 1.40 M_{\odot}$',fontsize=22)
         plt.text(5,-2.8,'$\\rm SURFACE, \\thinspace M = 1.85 M_{\odot}$',fontsize=22)
 
-        plt.savefig('fig1.pdf',format='pdf')
+        plt.savefig('fig1.eps',format='eps')
         plt.show()
 
 def show_curves_2(Pow=4, dt=0, timeshift=4e4):
@@ -162,7 +162,7 @@ def show_curves_2(Pow=4, dt=0, timeshift=4e4):
                 plt.plot([-10,-20], [-10,-20], '-', lw=3, color=colors[2], label=labels[2])
                 plt.plot([-10,-20], [-10,-20], '-', lw=3, color=colors[3], label=labels[3])
 
-        plt.legend(loc='upper right', fontsize=20)
+        plt.legend(loc='upper right', fontsize=20, frameon=False)
 
         plt.xticks(np.linspace(-0,35,8),fontsize=22)
         plt.xlim(-1,21)
@@ -182,7 +182,7 @@ def show_curves_2(Pow=4, dt=0, timeshift=4e4):
         plt.subplot(3,1,3)
         plt.text(9,-1.1,'$\\rm SURFACE, \\thinspace M = 1.85 M_{\odot}$',fontsize=22)
 
-        plt.savefig('fig2.pdf',format='pdf')
+        plt.savefig('fig2.eps',format='eps')
         plt.show()
 
 #show_curves_1()
@@ -213,7 +213,7 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
     plt.yticks(np.array([8,8.2,8.4,8.6,8.8,9]),fontsize=20)
     plt.xticks(np.array([9,10,11,12,13,14,15]),fontsize=20)
     if(rho==1):
-        plt.ylabel('$\\rm log \\thinspace$$ T e^{\\Phi} \\thinspace \\rm K$',fontsize=24)
+        plt.ylabel('$\\rm log \\thinspace$$ \\tilde{T} \\thinspace \\rm K$',fontsize=24)
     plt.setp(ax1.get_xticklabels(), visible=False)
     plt.xlim(9,15)
 
@@ -255,7 +255,7 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
         plt.plot([-10,-20], [-10,-20], lw=thickness[2], color='black', dashes=dashes[2,:], label='$t = 0.5 \\rm \\thinspace yr$')
         plt.plot([-10,-20], [-10,-20], lw=thickness[1], color='black', dashes=dashes[1,:], label='$t = 0.1 \\rm \\thinspace yr$')
         plt.plot([-10,-20], [-10,-20], lw=thickness[0], color='black', dashes=dashes[0,:], label='$t = 0.0 \\rm \\thinspace yr$')
-        plt.legend(loc='upper left',fontsize=20)
+        plt.legend(loc='upper left',fontsize=20,frameon=False)
     else:
         plt.text(13.11, 8.5, '$T < T_{\\rm cr}$', fontsize=23)
 
@@ -264,7 +264,7 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
         plt.plot([-10,-20], [-10,-20], lw=thickness[2], color='black', dashes=dashes[2,:], label='$t = 0.5 \\rm \\thinspace yr$')
         plt.plot([-10,-20], [-10,-20], lw=thickness[1], color='black', dashes=dashes[1,:], label='$t = 0.1 \\rm \\thinspace yr$')
         plt.plot([-10,-20], [-10,-20], lw=thickness[0], color='black', dashes=dashes[0,:], label='$t = 0.0 \\rm \\thinspace yr$')
-        plt.legend(loc='upper left',fontsize=20)
+        plt.legend(loc='upper left',fontsize=20, frameon=False)
 
     idx = 0
     ax2 = plt.subplot(2,1,2)
@@ -279,7 +279,7 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
         plt.yticks(np.array([8,8.1,8.2,8.3,8.4,8.5,8.6]),fontsize=20)
     else:
         plt.yticks(np.array([8,8.2,8.4,8.6,8.8,9]),fontsize=20)
-        plt.ylabel('$\\rm log \\thinspace$$ T e^{\\Phi}\\thinspace \\rm K$',fontsize=24)
+        plt.ylabel('$\\rm log \\thinspace$$ \\tilde{T}\\thinspace \\rm K$',fontsize=24)
     plt.xlabel('$\\rm log \\thinspace$$\\rho \\thinspace \\rm g \\thinspace cm^{-3}$',fontsize=24)
     plt.xticks(np.array([9,10,11,12,13,14,15]),fontsize=20)
     plt.xlim(9, 15)
@@ -316,16 +316,17 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
     else:
         plt.text(13, 8.4, '$T < T_{\\rm cr}$', fontsize=23)
 
-    plt.savefig('profile_2.pdf', format='pdf')
+    plt.savefig('profile_1.pdf', format='pdf')
     plt.show()
 
-temperature_profile_profile(rho=2)
-#temperature_profile_profile()
+#temperature_profile_profile(rho=2)
+#temperature_profile_profile(rho=1)
 
 
 def timedelay(Pow=5, dt=0):
 
     rho_values = np.array([3.16227766e+10, 1e11, 3.16227766e+11, 1e12, 3.16227766e+12, 1e13])
+    # 0 -- 10, 1 -- 50, 2 -- 100, 3 -- 200, 4 -- 500, 5 -- 1000
     rho_change = np.array([0,1,-1,2,-2,3])
     plot_style()
     Pow_idx = 0
@@ -379,9 +380,9 @@ def timedelay(Pow=5, dt=0):
     alpha = np.array([0.5, 0.5, 0.4, 0.5])
     zorder = np.array([4,2,2,3])
 
-    for i in range(0,4):
-        plt.fill_between(rho_sample, y_sample[i,:,0], y_sample[i,:,1], facecolor=colors[i], interpolate=True, alpha=alpha[i])
-        plt.plot(rho_sample, y_sample[i,:,2],lw=3,color=colors[i],zorder=zorder[i])
+    for i,tp in zip(range(0,4),['--','-','-','-']):
+        #plt.fill_between(rho_sample, y_sample[i,:,0], y_sample[i,:,1], facecolor=colors[i], interpolate=True, alpha=alpha[i])
+        plt.plot(rho_sample, y_sample[i,:,2],tp,label=labels[i],lw=3,color=colors[i],zorder=zorder[i])
 
     plt.xticks([10.5,11,11.5,12,12.5,13],fontsize=20)
     plt.xlim(11.4,13)
@@ -393,11 +394,12 @@ def timedelay(Pow=5, dt=0):
     plt.ylabel('$\Delta t_{\\rm r}$ $\\rm yr$',fontsize=24)
 
     #plt.text(11.45,6.8,'$ H_{\\rm{0}}/H_{\\rm{c}} = 10^{2}$', fontsize=23)
-    plt.text(11.45,9,'$ M = 1.4 M_{\odot}$', fontsize=25)
+    #plt.text(11.45,9,'$ M = 1.4 M_{\odot}$', fontsize=25)
 
-    plt.legend(loc='upper left', fontsize=20)
-    plt.savefig('timedelay.pdf', format='pdf')
+    plt.legend(loc='upper left', fontsize=20,frameon=False)
+    plt.savefig('timedelay.eps', format='eps')
     plt.show()
 
+timedelay(Pow=5, dt=0)
 
 

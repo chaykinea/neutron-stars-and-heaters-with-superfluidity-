@@ -42,11 +42,11 @@ def star_model_data_init(file = model_file):
     _g_surface = float(temp.readline().split()[1])
     temp.close()
 
-    _star_model = numpy.loadtxt(file, skiprows=2)
+    _star_model = numpy.loadtxt(file, skiprows=1)
 
     _rho = interpolate.interp1d(numpy.log(_star_model[:, 1] * 1e5), numpy.log(_star_model[:, 3]), kind='linear')
     _pressure = interpolate.interp1d(numpy.log(_star_model[:, 1] * 1e5), numpy.log(_star_model[:, 2]), kind='linear')
-    _radii = interpolate.interp1d(numpy.log(_star_model[:, 3]), numpy.log(_star_model[:, 1] * 1e5), kind='linear')
+    _radii = interpolate.interp1d(numpy.log(_star_model[:, 3]), numpy.log(_star_model[:, 1] * 1e5), kind='linear',fill_value='extrapolate')
     _mass = interpolate.interp1d(numpy.log(_star_model[:, 1] * 1e5), numpy.log(_star_model[:, 0] * MSun), kind='linear')
     _Phi = interpolate.interp1d(numpy.log(_star_model[:, 1] * 1e5), _star_model[:, 4], kind='linear')
     _nb = interpolate.interp1d(numpy.log(_star_model[:, 3]), _star_model[:, 5], kind='linear')
@@ -75,13 +75,7 @@ def pressure(a):  # Pressure(radius)
     return numpy.exp(_pressure(numpy.log(a)))
 
 def radii(a):  # radius(density)
-    try:
-        return numpy.exp(_radii(numpy.log(a)))
-    except(ValueError):
-        print ("Value Error in loaddata.radii(rho). Rho is out of interpolation range. You can "
-               "change rho_max and rho_min in manager.py file.\n")
-        print ('Simulation is terminated.')
-        exit(0)
+    return numpy.exp(_radii(numpy.log(a)))
 
 def mass(a):  # mass(radius)
     return numpy.exp(_mass(numpy.log(a)))

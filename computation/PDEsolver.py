@@ -23,8 +23,10 @@ def init():
         Rho = numpy.logspace( numpy.log10(loaddata.star_model()[2,3]),
                               numpy.log10(rho_min), Nzones + 1)  # density on cells' boundaries
     else:
-        Rho = numpy.logspace( numpy.log10(loaddata.star_model()[2,3]),
-                              numpy.log10(loaddata.star_model()[-2,3]), Nzones + 1)
+        #Rho = numpy.logspace( numpy.log10(loaddata.star_model()[2,3]),
+        #                      numpy.log10(loaddata.star_model()[-2,3]), Nzones + 1)
+        Rho = numpy.logspace(numpy.log10(loaddata.star_model()[0, 3]),
+                         numpy.log10(loaddata.star_model()[-1, 3]), Nzones + 1)
     r_b = loaddata.radii(Rho)                                    # boundaries of the cells
     r = (r_b[1:] + r_b[:-1])/2                                   # average cell's radius
     dr = r[1:] - r[:-1]                                          # distance between cells
@@ -50,7 +52,7 @@ def init():
     print ('rho_max:   %1.4e gm/cm-3' % (rho_r[0]))
     print ('rho_min:   %1.4e gm/cm-3' % (rho_r[-1]))
     print ('redshift:  %5.4f \n' % (redshift))
-    print ('Magnetic field:  %1.2e Gauss' % (MagField ))
+    print ('Magnetic field:  %1.2e Gauss' % (MagField))
     print ('Surface gravity: %1.2e cm/s^2\n' %(loaddata.g_surface()*1e14))
     if(SUPERFLUIDITY):
         print ('Superfluidity is ON')
@@ -227,14 +229,23 @@ def time_step_control():
 # -----------------------------------------------------HEAT-SOURCE-----------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------------------
 
-r_0 = 1.20413015e+06 # cm
-sigma_g = 4.38291763e+03 # cm
-H_f = lambda r: 1.66225679807e16 + 6.39198181e+04 * 1e17 * numpy.exp(-(r-r_0)**2/sigma_g**2 / 2)/numpy.sqrt(2*numpy.pi*sigma_g**2 ) # M_dot = 1e-9 M_solar/yr
-'''
-r_0 = 1.21161929e+06 # cm
-sigma_g = 2.68581589e+03  # cm
-H_f = lambda r: 3.80131342314e16 +  6.64638989e+04 * 1e17 * numpy.exp(-(r-r_0)**2/sigma_g**2 / 2)/numpy.sqrt(2*numpy.pi*sigma_g**2 )
-'''
+def source_power(model_parm=model_param):
+
+    global H_f
+
+    r_0 = numpy.array([1.20413015e+06, 1.21000074e+06 , 1.21203074e+06, 1.21269574e+06,  1.21353249e+06, 1.21448985e+06, 1.21486413e+06, 1.21161929e+06])
+    sigma_g = numpy.array([4.38291763e+03, 3.97737319e+03, 3.78693639e+03, 3.71309773e+03, 3.60523861e+03, 3.43057815e+03, 3.26194154e+03, 2.68581589e+03])
+    const_1 = numpy.array([1.66225679807e16, 1.86808408312e16, 1.98349866253e16, 2.03226874478e16, 2.10820556759e16, 2.2441279112e16, 2.39298439565e16 , 3.80131342314e16])
+    const_2 = numpy.array([6.39198181e+04, 6.44242849e+04, 6.47562763e+04, 6.49105274e+04, 6.51666607e+04,  6.56611002e+04, 6.62462312e+04,6.64638989e+04 ])
+    model_param_arr = numpy.array([1.40, 1.50, 1.55, 1.57, 1.60, 1.65, 1.70, 1.85])
+
+    r_0_f = scipy.interpolate.interp1d(model_param_arr, r_0)
+    sigma_g_f = scipy.interpolate.interp1d(model_param_arr, sigma_g)
+    const_1_f = scipy.interpolate.interp1d(model_param_arr, const_1)
+    const_2_f = scipy.interpolate.interp1d(model_param_arr, const_2)
+    H_f = lambda r: const_1_f(model_parm) + const_2_f(model_parm) * 1e17 * numpy.exp(-(r-r_0_f(model_parm))**2/sigma_g_f(model_parm)**2 / 2)/numpy.sqrt(2*numpy.pi*sigma_g_f(model_parm)**2 ) # M_dot = 1e-9 M_solar/yr
+
+
 def source_initialization(duration,power,Left,Right):
 
     R_L_computator(Left,Right)
@@ -249,7 +260,6 @@ def source_initialization(duration,power,Left,Right):
     for i in range(L,R):
         #  S[i] = 1e17  steps from 1 to 6
         S[i] = H_0 * H_f(r[i]) #  step 7
-        print(rho_r[i], r[i]/1e6, H_f(r[i]))
 
         
 def R_L_computator(Left,Right):
@@ -404,7 +414,7 @@ def solve_PDE_with_source(source_number,source_number_max):
 
             data = numpy.vstack([loaddata.T_e(T[-1]*numpy.exp(-loaddata.Phi(r[-1])))*redshift,
                                  t/yrtosec,
-                                 T[-1]*numpy.exp(-loaddata.Phi(r_b[-1])),
+                                 T[-1],
                                  numpy.sum(4.*pi*numpy.power(r,2)*dr_b*numpy.exp(2*loaddata.Phi(r))*S*f(t)/relativity_sqrt(r)),
                                  numpy.sum(4.*pi*numpy.power(r,2)*dr_b*Q(T,rho_r)/relativity_sqrt(r)),
                                  4.*pi*numpy.power(r_b[-1],2)*sigma*numpy.power(loaddata.T_e(T[-1]*numpy.exp(-loaddata.Phi(r[-1]))),4)*redshift*redshift,
@@ -516,21 +526,17 @@ def params(time,source_name):
 
     # ACCRETION
     turn_on_time_0 = 1e3
-    turn_on_time = turn_on_time_0 + 3e3
-    t_source_max = turn_on_time + 20
+    turn_on_time = turn_on_time_0 + 1.45
+    t_source_max = turn_on_time + 5
     name = source_name
 
     t_source_points     = numpy.array([turn_on_time +0.01 ,turn_on_time + 0.1,turn_on_time + 1.,turn_on_time + 5., turn_on_time + 10.,
                                    turn_on_time + 50., turn_on_time + 100., turn_on_time + 500., turn_on_time + 1000.])       # in years
     t_source_steps      = [time_steps[error_min], time_steps[error_min]*10  , time_steps[error_min]*20 , time_steps[error_min]*50,
-                           #time_steps[error_min]*100 , time_steps[error_min]*300 , time_steps[error_min]*500,  time_steps[error_min]*1000,  time_steps[error_min]*2000]
                            time_steps[error_min]*100 , time_steps[error_min]*300 , 5.e6, 5.e7, 5.e7]
 
-    t_points_save_data  = numpy.array([turn_on_time + 0.01, turn_on_time + 0.1, turn_on_time + 0.5, turn_on_time + 1., turn_on_time + 2.,
-                                       turn_on_time + 3.,   turn_on_time + 4.,  turn_on_time + 5,   turn_on_time + 6., turn_on_time + 7,
-                                       turn_on_time + 8,    turn_on_time + 9,   turn_on_time + 10,  turn_on_time + 11, turn_on_time + 12,
-                                       turn_on_time + 13,   turn_on_time + 14,  turn_on_time + 15,  turn_on_time + 16, turn_on_time + 17,
-                                       turn_on_time + 18,   turn_on_time + 19,  turn_on_time + 20,  turn_on_time + 21, turn_on_time + 22])
+    t_points_save_data  = numpy.array([turn_on_time + 0.00001, turn_on_time + 0.01, turn_on_time + 0.1, turn_on_time + 0.5, turn_on_time + 1., turn_on_time + 1.5,
+                                       turn_on_time + 2.,   turn_on_time + 2.5,  turn_on_time + 3,  turn_on_time + 3.5, turn_on_time + 4., turn_on_time + 4.5, turn_on_time + 5])
 
 # ENERGY RELEASES
 '''
@@ -552,12 +558,8 @@ def f(t):
 
     if(t>=turn_on_time_0*yrtosec):
         if t>=turn_on_time*yrtosec:
-            return 1 * numpy.exp(-(t - turn_on_time*yrtosec)/(D * 24 * 60 * 60))
-            #return 0.8 * numpy.exp(-(t - turn_on_time*yrtosec)/(D * 24 * 60 * 60)) + 0.2
+            return  numpy.exp(-(t - turn_on_time*yrtosec)/(D * 24 * 60 * 60))
         else:
-            if (t - turn_on_time_0*yrtosec) < 1e3*yrtosec:
-                return numpy.sin(numpy.pi*(t - turn_on_time_0*yrtosec)/(2 * 1e3*yrtosec))
-            else:
-                return 1.0
+            return 1.0
     else:
         return 0.0

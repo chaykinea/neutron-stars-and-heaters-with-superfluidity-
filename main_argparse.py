@@ -27,13 +27,11 @@ external_param = numpy.array(args.integers)
 def data_init():
 
     print ('Simulation of neutron star cooling starts... \n')
-
-    loaddata.star_model_data_init()
-    if(model_file):
-        tite_1e9.init(log_rho_b,rho_star)
-    else:
-        tite.tite_init()
-    loaddata.TiTe_data_init()
+    config = numpy.loadtxt(source_cfg)
+    loaddata.star_model_data_init(file='data/BSK21_1.' + str(external_param[6]) + '.dat')
+    print('File name = ', 'data/BSK21_1.' + str(external_param[6]) + '.dat', '\n')
+    print('File name = ', 'data/BSK21_1.' + str(external_param[6]) + '.dat', '\n')
+    print('File name = ', 'data/BSK21_1.' + str(external_param[6]) + '.dat', '\n')
     loaddata.superfluid_data_init()
     loaddata.eff_mass_data_init()
 
@@ -41,7 +39,7 @@ def data_init():
 
 def config_reader():
 
-    global left_boundary, right_boundary, power, duration
+    global left_boundary, right_boundary, power, duration, env_model, rho_star_arr
 
     config = numpy.loadtxt(source_cfg)
 
@@ -49,6 +47,8 @@ def config_reader():
     right_boundary = config[:,1]
     power          = config[:,2]
     duration       = config[:,3]
+    env_model      = config[:,4]
+    rho_star_arr   = config[:,5]
 
 def main():
 
@@ -97,11 +97,6 @@ def main():
             print ('%2i %1.2e %1.2e %1.2e %1.2e' % (i, left_boundary[i], right_boundary[i], power[i], duration[i]))
         print ('-------------------------\n')
 
-        for i in range(10,0,-1):
-            print('Simulation begins in %d sec...' % i)
-            time.sleep(1)
-        print(' ')
-
         start = timeit.default_timer()
 
         if external_param[2]!=0:
@@ -113,8 +108,26 @@ def main():
 
         for simulation_number in range(external_param[0],external_param[1]):
 
+            tite_1e9.init(rho_bound=log_rho_b, rho_star=rho_star_arr[simulation_number], comp=int(env_model[simulation_number]))
+
+            print('Comp = ', int(env_model[simulation_number]), '\n')
+            print('Comp = ', int(env_model[simulation_number]), '\n')
+            print('Comp = ', int(env_model[simulation_number]), '\n')
+            print('Rho star = ', rho_star_arr[simulation_number], '\n')
+            print('Rho star = ', rho_star_arr[simulation_number], '\n')
+            print('Rho star = ', rho_star_arr[simulation_number], '\n')
+
+            loaddata.TiTe_data_init()
+
             if simulation_number != external_param[0]:
                 PDEsolver.re_init()
+
+            a = 1.00 + float(external_param[6])/100
+            print('model param:', a, '\n')
+            print('model param:', a, '\n')
+            print('model param:', a, '\n')
+
+            PDEsolver.source_power(model_parm=a)
             PDEsolver.source_initialization(duration[simulation_number],power[simulation_number],
                                             left_boundary[simulation_number],right_boundary[simulation_number])
             if(source_visualise):
@@ -137,9 +150,6 @@ def main():
              output_1 = open('output/cooling_SF0.dat', 'wb')
              output_2 = open('output/profiles_SF0.dat', 'wb')
 
-        for i in range(10,0,-1):
-            print ('Simulation begins in %d sec...' % i)
-            time.sleep(1)
         print ('')
 
         start = timeit.default_timer()

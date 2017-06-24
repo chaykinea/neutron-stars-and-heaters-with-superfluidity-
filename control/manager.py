@@ -8,7 +8,8 @@
 # ----------------------------------------------------------------
 # ----------------------general parameters------------------------
 # ----------------------------------------------------------------
-model_file     = 'data/model_rho9.dat'                         # file containing data of the model of NS
+model_file     = 'data/BSK21_1.40.dat'                         # file containing data of the model of NS
+model_param    =  1.40
 tite_file      = 'data/tite2.dat'                              # TiTe data file
 npsf_file      = 'data/npsf.dat'                               # superfluidity data file
 effmass_file   = 'data/effmass.dat'                            # effective mass data file
@@ -22,19 +23,19 @@ regime         = 1                                             # if 1 - Implicit
 
 dM_accreted    = 1.e-15                                        # mass of accreted envelope in units of NS mass
 MagField       = 0.0e12                                        # Magnetic filed at pole in Gauss
-log_rho_b      = 9.0                                          # to determine the boundary for computing NS envelope log(rho_b) in g/cm3
-rho_star       = 0.0                                           # [0<=rho_star<=10**log_rho_b] if 0 then Fe envelope is used, if max then C, and mixture in between
-tite_model     = 1                                             # 0 for A. Y. Potekhin et al 1997 and 1 for M. V. Beznogov et al 2016 [C-Fe mixture]
+log_rho_b      = 9.0                                           # to determine the boundary for computing NS envelope log(rho_b) in g/cm3
+rho_star       = 10**8                                         # [0<=rho_star<=10**log_rho_b] if 0 then Fe envelope is used, if max then C, and mixture in between
+tite_model     = 2                                             # 0 for A. Y. Potekhin et al 1997 and 1 for M. V. Beznogov et al 2016 [C-Fe mixture]
 
-T_0            = 1.e10                                         # initial redshifted temperature of the star (T(r) = const at time t = 0) in K
+T_0            = 1.25e8      #XTE 1.25e8  MAXI 2                  # initial redshifted temperature of the star (T(r) = const at time t = 0) in K
 # ----------------------------------------------------------------
 
 
 # ----------------------------------------------------------------
 # -----------parameters for creating mesh and solving PDE---------
 # ----------------------------------------------------------------
-t_0            = 0.                                            # initial time (in sec)
-dt_0           = 0.001                                           # initial time step (in sec)
+t_0            = 1e3*31536000                                  # initial time (in sec)
+dt_0           = 0.001                                         # initial time step (in sec)
 
 rho_vary       = 0                                             # if 0 - rho_min and rho_max are the max and min density values
                                                                # which are avaible in the NS model file. if 1 - you can
@@ -45,13 +46,14 @@ t_max          = 4.e6                                          # time when simla
 t_iso          = 7.e2                                          # for time t > t_iso NS has iswe assume, that NS has isothermal profile (in years)
 T_min          = 2.e5                                          # Temperature below which simulation stops
 
-Nzones         = 350                                           # number of zones star will be logarithmically divided into
+Nzones         = 500                                           # number of zones star will be logarithmically divided into
 N_output       = 2000                                          # number of data points in output file containing cooling curves
 
 # ----------------------------------------------------------------
 time_points    = [1e-7, 1.e-6, 1.e-3, 1.e-2, 1.e-1, 1.e0, 1.e1, 1.e2, 3.e2, 1.e3, 2.e3, 1.e5, 1.e6] # points in time where we change timestep and write T(rho) data into file
 #time_steps     = [10,  1.e2, 4.e2, 1.e4, 3.e4, 1.e5, 3.e5, 1.e6, 5.e6, 1.e8,  1.e8, 1.e8,1.e10]  # timestep values
-time_steps     = [10,  1.e2, 5.e3, 1.e4, 3.e4, 1.e5, 1.e6, 1.e7, 1.e7,  1.e7, 1.e7,1.e10]  # timestep values
+#time_steps     = [10,  1.e2, 5.e3, 5.e3, 3.e4, 1.e5, 1.e6, 1.e7, 1.e8,  1.e8, 1.e8,1.e10]  # timestep values
+time_steps     = [10,    1.e2, 1.e3,   2.e3,  1.e4, 5.e4, 1.e5, 1.e5, 1.e5, 1.e5, 1.e8,1.e10]  # timestep values
 # ----------------------------------------------------------------
 
 

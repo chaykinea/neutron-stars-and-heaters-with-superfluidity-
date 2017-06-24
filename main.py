@@ -131,7 +131,7 @@ def show_cooling_curves():
 
 data_init()
 main()
-#show_cooling_curves()
+show_cooling_curves()
 
 
 

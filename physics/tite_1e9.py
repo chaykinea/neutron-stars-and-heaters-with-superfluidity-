@@ -1,83 +1,78 @@
 __author__ = 'maryhallow'
 
-import numpy
-from scipy.interpolate import *
+import numpy as np
 from data import loaddata
-import matplotlib.pylab as plt
 
-def coef_init():
 
-    global p_1, p_2, p_3, p_4, p_5, p_6, p_7, p_8, p_9, p_10, p_11, p_12, p_13, p_14
+def coef_init(rho, comp):
 
-    log_density = numpy.array([8.0,9.0,10.0])
+    global coeff, f_1, f_2, f_3, f_4, f_5
 
-    p_rho_8 = numpy.array([0.2420, 0.4844, 38.35, 0.8680, 5.184, 1.651,
-                   -0.04390, 0.001929, 3.462e4, 2.728, 4.120, 2.161, 2.065, 0.008442])
+    if comp==1:
 
-    p_rho_9 = numpy.array([0.1929, 0.4239, 48.72, 1.423, 5.218, 1.652,
-                   0.001037, 0.004236, 3.605e4, 2.119, 4.014, 1.943, 1.788, 0.01758])
+        f_1 = lambda Y: coeff[0] * np.power(Y, -coeff[1]) * (coeff[2] * np.power(Y, 2) + coeff[3] * np.power(Y, 4) - 1)
+        f_2 = lambda Y: coeff[8] * (Y ** (coeff[10] - (coeff[9] * np.log10(Y) * np.log10(Y))))
+        f_3 = lambda Y: coeff[11] * np.sqrt(1. / (Y * Y + coeff[12] * coeff[12])) * (1. - coeff[13] * Y * Y)
+        f_4 = lambda Y: coeff[4] * np.power(Y, coeff[5]) * (1 + coeff[6] * np.power(Y, 2) - coeff[7] * np.power(Y, 4))
+        f_5 = lambda Y: -0.4
 
-    p_rho_10 = numpy.array([0.1686, 0.3967, 55.94, 1.992, 5.208, 1.651,
-                    0.03235, 0.005417, 3.652e4, 1.691, 3.930, 2.021, 1.848, 0.02567])
+        if rho==8:
+            coeff = np.array([0.2420, 0.4844, 38.35, 0.8680, 5.184, 1.651, -0.04390, 0.001929, 3.462e4, 2.728, 4.120, 2.161, 2.065, 0.008442])
+        elif rho==9:
+            coeff = np.array([0.1929, 0.4239, 48.72, 1.423, 5.218, 1.652, 0.001037, 0.004236, 3.605e4, 2.119, 4.014, 1.943, 1.788, 0.01758])
+        elif rho==10:
+            coeff = np.array([0.1686, 0.3967, 55.94, 1.992, 5.208, 1.651, 0.03235, 0.005417, 3.652e4, 1.691, 3.930, 2.021, 1.848, 0.02567])
+            
+    elif comp==2:
 
-    p_1 = interpolate.interp1d(log_density, numpy.array([p_rho_8[0],p_rho_9[0],p_rho_10[0]]), kind='linear')
-    p_2 = interpolate.interp1d(log_density, numpy.array([p_rho_8[1],p_rho_9[1],p_rho_10[1]]), kind='linear')
-    p_3 = interpolate.interp1d(log_density, numpy.array([p_rho_8[2],p_rho_9[2],p_rho_10[2]]), kind='linear')
-    p_4 = interpolate.interp1d(log_density, numpy.array([p_rho_8[3],p_rho_9[3],p_rho_10[3]]), kind='linear')
-    p_5 = interpolate.interp1d(log_density, numpy.array([p_rho_8[4],p_rho_9[4],p_rho_10[4]]), kind='linear')
-    p_6 = interpolate.interp1d(log_density, numpy.array([p_rho_8[5],p_rho_9[5],p_rho_10[5]]), kind='linear')
-    p_7 = interpolate.interp1d(log_density, numpy.array([p_rho_8[6],p_rho_9[6],p_rho_10[6]]), kind='linear')
-    p_8 = interpolate.interp1d(log_density, numpy.array([p_rho_8[7],p_rho_9[7],p_rho_10[7]]), kind='linear')
-    p_9 = interpolate.interp1d(log_density, numpy.array([p_rho_8[8],p_rho_9[8],p_rho_10[8]]), kind='linear')
-    p_10 = interpolate.interp1d(log_density, numpy.array([p_rho_8[9],p_rho_9[9],p_rho_10[9]]), kind='linear')
-    p_11 = interpolate.interp1d(log_density, numpy.array([p_rho_8[10],p_rho_9[10],p_rho_10[10]]), kind='linear')
-    p_12 = interpolate.interp1d(log_density, numpy.array([p_rho_8[11],p_rho_9[11],p_rho_10[11]]), kind='linear')
-    p_13 = interpolate.interp1d(log_density, numpy.array([p_rho_8[12],p_rho_9[12],p_rho_10[12]]), kind='linear')
-    p_14 = interpolate.interp1d(log_density, numpy.array([p_rho_8[13],p_rho_9[13],p_rho_10[13]]), kind='linear')
+        f_1 = lambda Y: coeff[0] * np.power(Y, coeff[1]*np.log10(Y) + coeff[2])
+        f_2 = lambda Y: coeff[6] * np.power(Y, coeff[7]*np.log10(Y)*np.log10(Y) + coeff[8])
+        f_3 = lambda Y: coeff[9] * np.sqrt(Y / (Y * Y + coeff[10] * coeff[10]))
+        f_4 = lambda Y: coeff[3] * np.power(Y, coeff[4]*np.log10(Y) + coeff[5])
+        f_5 = lambda Y: -0.2
 
-def f_1(rho,Y):
-    return p_1(rho)*numpy.power(Y,-p_2(rho)) * (p_3(rho)*numpy.power(Y,2) + p_4(rho)*numpy.power(Y,4) - 1)
+        if rho == 8:
+            coeff = np.array([5.161, 0.03319, 1.654, 3.614, 0.02933,  1.652, 1.061e5, 1.646,  3.707, 4.011, 1.153])
+        elif rho == 9:
+            coeff = np.array([5.296, 0.07402, 1.691, 3.774, 0.08210, 1.712, 1.057e5, 1.915, 3.679, 3.878, 1.110])
+        elif rho == 10:
+            coeff = np.array([5.386, 0.1027, 1.719, 3.872, 0.1344, 1.759, 1.056e5, 1.881, 3.680, 3.857, 1.102])
 
-def f_2(rho,Y):
-    return p_9(rho) * (Y ** (p_11(rho) - (p_10(rho) * numpy.log10(Y) * numpy.log10(Y))))
 
-def f_3(rho,Y):
-    return p_12(rho) * numpy.sqrt(1./(Y*Y + p_13(rho)*p_13(rho))) * (1. - p_14(rho)*Y*Y)
+def T_b(Y,rho_star):
 
-def f_4(rho,Y):
-    return p_5(rho)*numpy.power(Y,p_6(rho)) * (1 + p_7(rho)*numpy.power(Y,2) - p_8(rho)*numpy.power(Y,4))
-
-def f_5(rho,Y):
-    return -0.4
-
-def T_b(rho,Y,rho_star):
-
-    temp = 1.e7 * f_4(rho,Y) + 1.e7 * (f_1(rho,Y) - f_4(rho,Y)) * ((1 + (rho_star/f_2(rho,Y)) ** f_3(rho,Y)) ** f_5(rho,Y))
+    temp = 1.e7 * f_4(Y) + 1.e7 * (f_1(Y) - f_4(Y)) * ((1 + (rho_star/f_2(Y)) ** f_3(Y)) ** f_5(Y))
     return temp
 
-def tite_2(rho,g_s,rho_st):
+def tite_2(rho,g_s,rho_st, comp):
 
     tite = open('data/tite2.dat', 'w')
 
     g_s0 = 2.4271e14
     g_s *= 1e14
 
-    coef_init()
+    coef_init(rho, comp)
 
-    T_loc = numpy.logspace(5.2,6.71,50)
+    T_loc = np.logspace(5.2,6.71,50)
+    if comp==1:
+        p = [coeff[0],coeff[1],coeff[2],coeff[3],coeff[4],coeff[5],coeff[6],coeff[7],coeff[8],coeff[9],coeff[10],coeff[11],coeff[12],coeff[13]]
+    else:
+        p = [coeff[0],coeff[1],coeff[2],coeff[3],coeff[4],coeff[5],coeff[6],coeff[7],coeff[8],coeff[9],coeff[10]]
 
-    p = [p_1(rho),p_2(rho),p_3(rho),p_4(rho),p_5(rho),p_6(rho),p_7(rho),p_8(rho),p_9(rho),p_10(rho),p_11(rho),p_12(rho),p_13(rho),p_14(rho)]
     tite.write(str(p) + '\n')
     tite.write('log(rho_b) = %2.1f g/cm3, g_s = %1.4e cm/sec2\n' % (rho,g_s))
     tite.write('------------------------\n')
 
     for i in range(0,len(T_loc)):
 
-            Y = T_loc[i] * 1e-6 * numpy.power( g_s0/g_s , 1./4 )
-            temp_T_b = T_b(rho,Y,rho_st)
-            tite.write('%6.3f %7.5f \n' % ((numpy.log10(temp_T_b)),numpy.log10(T_loc[i])))
+            Y = T_loc[i] * 1e-6 * np.power( g_s0/g_s , 1./4 )
+            temp_T_b = T_b(Y,rho_st)
+            tite.write('%6.3f %7.5f \n' % ((np.log10(temp_T_b)),np.log10(T_loc[i])))
 
     tite.close()
 
-def init(rho_bound,rho_star):
-    tite_2(rho_bound,loaddata.g_surface(),rho_star)
+def init(rho_bound,rho_star, comp=1):
+    tite_2(rho_bound, loaddata.g_surface(), rho_star, comp)
+
+
+

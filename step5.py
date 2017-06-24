@@ -120,23 +120,31 @@ def shift(Pow=5, change=0):
 
     zorder = np.array([3,2,2,2])
     for i in range(0,3):
-        plt.fill_between(rho_sample, y_sample[i,:,0], y_sample[i,:,1], facecolor=colors[i+1], interpolate=True, alpha=0.5)
+        #plt.fill_between(rho_sample, y_sample[i,:,0], y_sample[i,:,1], facecolor=colors[i+1], interpolate=True, alpha=0.5)
         plt.plot(rho_sample, y_sample[i,:,2],lw=3,color=colors[i+1],zorder=zorder[i+1])
+        #plt.plot(rho_sample, y_sample[i,:,0],lw=3,color=colors[i+1],zorder=zorder[i+1])
+        plt.plot(rho_sample, y_sample[i,:,1],lw=3,color=colors[i+1],zorder=zorder[i+1])
 
     plt.yticks([1,1.5,2,2.5,3,3.5,4],fontsize=20)
     plt.ylim(0.9,4)
 
     plt.xlabel('$\\rm log \\thinspace$$\\rho_{1} \\thinspace \\rm g \\thinspace cm^{-3}$',fontsize=24)
-    plt.ylabel('$L^{\infty, sf}_{\\rm max}/L^{\infty}_{\\rm max}$',fontsize=24)
+    plt.ylabel('$L^{\infty, \\rm sf}_{\\rm max}/L^{\infty}_{\\rm max}$',fontsize=24)
     plt.text(11.05,3.1,'$ M = 1.85 M_{\odot}$', fontsize=23)
 
-    plt.text(11.9, 3.7, '$ H_{\\rm 0} = 10^{3} H_{\\rm c}$', fontsize=23)
-    plt.text(12.3, 3.1, '$ H_{\\rm 0} = 5 \\times 10^{2} H_{\\rm c}$', fontsize=23)
-    plt.text(11.75, 2.0, '$ H_{\\rm 0} = 2 \\times 10^{2} H_{\\rm c}$', fontsize=23)
+    plt.text(12, 3.7, '$ H_{\\rm 0} = 10^{3} H_{\\rm c}$', fontsize=21,color='green')
+    plt.text(12.3, 3.13, '$ H_{\\rm 0} = 5 \\times 10^{2} H_{\\rm c}$', fontsize=21,color='green')
+    plt.text(12.24, 2.6, '$ H_{\\rm 0} = 10^{3} H_{\\rm c}$', fontsize=21,color='red')
+    plt.text(12.28, 1.87, '$ H_{\\rm 0} = 5 \\times 10^{2} H_{\\rm c}$', fontsize=21,color='red')
+    plt.text(12.5, 1.38, '$ H_{\\rm 0} = 10^{3} H_{\\rm c}$', fontsize=21,color='darkblue')
+    plt.text(12.4, 0.96, '$ H_{\\rm 0} = 5 \\times 10^{2} H_{\\rm c}$', fontsize=20,color='darkblue')
+    #plt.text(11.75, 2.0, '$ H_{\\rm 0} = 2 \\times 10^{2} H_{\\rm c}$', fontsize=21)
 
-    plt.legend(loc='upper left', fontsize=20)
-    plt.savefig('ratios_density_m1.pdf', format='pdf')
+    plt.legend(loc='upper left', fontsize=20,frameon=False)
+    plt.savefig('ratios_density_m1.eps', format='eps')
     plt.show()
+
+#shift()
 
 def shift2(Pow=5, change=0):
 
@@ -192,25 +200,31 @@ def shift2(Pow=5, change=0):
 
     zorder = np.array([3,2,2,2])
     for i in range(0,3):
-        plt.fill_between(rho_sample, y_sample[i,:,0], y_sample[i,:,1], facecolor=colors[i+1], interpolate=True, alpha=0.5)
+        #plt.fill_between(rho_sample, y_sample[i,:,0], y_sample[i,:,1], facecolor=colors[i+1], interpolate=True, alpha=0.5)
         plt.plot(rho_sample, y_sample[i,:,2],lw=3,color=colors[i+1],zorder=zorder[i+1])
+        #plt.plot(rho_sample, y_sample[i,:,0],lw=3,color=colors[i+1],zorder=zorder[i+1])
+        plt.plot(rho_sample, y_sample[i,:,1],lw=3,color=colors[i+1],zorder=zorder[i+1])
 
     plt.yticks([1,1.5,2,2.5,3,3.5,4],fontsize=20)
     plt.ylim(0.9,2.5)
 
     plt.xlabel('$\\rm log \\thinspace$$\\rho_{1} \\thinspace \\rm g \\thinspace cm^{-3}$',fontsize=24)
-    #plt.ylabel('$L^{\infty, sf}_{\\rm max}/L^{\infty}_{\\rm max}$',fontsize=24)
+    #plt.ylabel('$L^{\infty,\\rm sf}_{\\rm max}/L^{\infty}_{\\rm max}$',fontsize=24)
     plt.text(11.1,2.37,'$ M = 1.40 M_{\odot}$', fontsize=23)
 
-    plt.text(11.65, 1.55, '$ H_{\\rm 0} = 2 \\times 10^{2} H_{\\rm c}$', fontsize=23)
-    plt.text(11.75, 1.98, '$ H_{\\rm 0} = 5 \\times 10^{2} H_{\\rm c}$', fontsize=23)
-    plt.text(12.1,2.4, '$ H_{\\rm 0} = 10^{3} H_{\\rm c}$', fontsize=23)
+    #plt.text(11.65, 1.55, '$ H_{\\rm 0} = 2 \\times 10^{2} H_{\\rm c}$', fontsize=21)
+    plt.text(11.75, 1.98, '$ H_{\\rm 0} = 5 \\times 10^{2} H_{\\rm c}$', fontsize=21, color='green')
+    plt.text(12.1,2.41, '$ H_{\\rm 0} = 10^{3} H_{\\rm c}$', fontsize=21,color='green')
+    plt.text(12, 1.66, '$ H_{\\rm 0} = 5 \\times 10^{2} H_{\\rm c}$', fontsize=21, color='red')
+    plt.text(11.95,1.34, '$ H_{\\rm 0} = 10^{3} H_{\\rm c}$', fontsize=21,color='red')
+    plt.text(12.5, 1.13, '$ H_{\\rm 0} = 10^{3} H_{\\rm c}$', fontsize=21,color='darkblue')
+    plt.text(12.4, 0.96, '$ H_{\\rm 0} = 5 \\times 10^{2} H_{\\rm c}$', fontsize=20,color='darkblue')
 
     #plt.legend(loc='upper left', fontsize=20)
-    plt.savefig('ratios_density_m2.pdf', format='pdf')
+    plt.savefig('ratios_density_m2.eps', format='eps')
     plt.show()
 
-#shift2(Pow=4,change=1)
+shift2(Pow=4,change=1)
 
 def _Tcs(nn):
 
@@ -275,7 +289,7 @@ def T_crit():
                      linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),label=model)
         idx += 1
 
-    plt.legend(loc='upper left',fontsize=23)
+    plt.legend(loc='upper left',fontsize=23,frameon=False)
 
     plt.xlabel('$\\rm log \\thinspace$$\\rho \\thinspace \\rm g \\thinspace cm^{-3}$',fontsize=24)
     plt.ylabel('$\\rm T_{c} \\thinspace (10^{9} K)$',fontsize=22)
@@ -285,8 +299,8 @@ def T_crit():
     plt.ylim(0,14)
 
     np.save('Tcrit_data.npy', output)
-    plt.show()
-    #plt.savefig('Tcrit_ns.pdf',format='pdf')
+    #plt.show()
+    plt.savefig('Tcrit_ns.eps',format='eps')
 
 T_crit()
 
@@ -332,18 +346,18 @@ def heat_cap():
         plt.plot(np.log10(rho),np.log10(heat_capacity_SCLBL(T,rho)),color=colors[3],lw=2)
         #plt.plot(np.log10(rho),np.log10(heat_capacity_e(T,rho)),dashes=[3,3],color='black',lw=2.5)
         plt.plot(np.log10(rho),np.log10(heat_capacity_eb(T,rho)),dashes=[3,3],color='black',lw=2.5)
-
+    
+    plt.plot([-10,-20], [-10,-20], lw=3.5, color=colors[0], dashes=[14,3], label=labels[0])
     plt.plot([-10,-20], [-10,-20], '-', lw=1.5, color=colors[1], label=labels[1])
     plt.plot([-10,-20], [-10,-20], '-', lw=1.5, color=colors[2], label=labels[2])
     plt.plot([-10,-20], [-10,-20], '-', lw=1.5, color=colors[3], label=labels[3])
-    plt.plot([-10,-20], [-10,-20], lw=3.5, color=colors[0], dashes=[14,3], label=labels[0])
     plt.plot([-10,-20], [-10,-20], lw=2.5, color='black',dashes=[3,3], label='$\\rm C_{e} + C_{ion}$')
 
     plt.yticks(np.array([15,16,17,18,19,20,21]),fontsize=20)
     plt.xticks(np.array([10,11,12,13,14,15]),fontsize=20)
     plt.xlim(10,15)
     plt.ylim(14.9,21)
-    plt.legend(loc='upper left',fontsize=18)
+    plt.legend(loc='upper left',fontsize=18, frameon=False)
 
     plt.text(10.3,15.6,'$T = 10^{7} \\thinspace \\rm K$',fontsize=21)
     plt.text(10.6,16.6,'$T = 10^{8} \\thinspace \\rm K$',fontsize=21)
@@ -351,11 +365,10 @@ def heat_cap():
 
     plt.xlabel('$\\rm log \\thinspace$$\\rho \\thinspace \\rm g \\thinspace cm^{-3}$',fontsize=24)
     plt.ylabel('$\\rm log \\thinspace$$ C_{V}  \\thinspace \\thinspace \\rm erg \\thinspace K^{-1} cm^{-3}$',fontsize=24)
+    
+    plt.savefig('heatcap.eps', format='eps')
 
-    plt.savefig('heatcap.pdf', format='pdf')
-    plt.show()
-
-
+#heat_cap()
 
 
 
