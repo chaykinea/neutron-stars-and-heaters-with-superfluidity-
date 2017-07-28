@@ -9,14 +9,23 @@ def find_nearest(array,value):
 
 names = np.array(['SF0','AWP2', 'GIPSF', 'SCLBL'])
 labels = np.array(['No SF','AWP2', 'GIPSF', 'SCLBL'])
-colors = np.array(['black','red','green','darkblue'])
+colors = np.array(['black','darkblue','red','darkorange'])
+colors2 = np.array(['black','deepskyblue','salmon','#ffcc99'])
 shape = np.array(['s','^','o','d'])
-
+line_thickness = np.array([4.8, 2.7,2.2,3.2])
+dashes = np.array([[2,1e-15],[4,8],[20,3],[9,6]])
+order = np.array([1,4,2,3])
 
 def plot_style(xticks=5,yticks=5):
-
+    
+    global ax
+    
+    plt.rc('text', usetex=True)
+    #plt.rcParams['mathtext.fontset'] = 'cm'
+    #plt.rcParams['mathtext.rm'] = 'serif'
     plt.rcParams.update({'figure.autolayout': True})
-    #plt.tight_layout()
+    plt.rcParams['ytick.direction'] = 'in'
+    plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['axes.linewidth'] = 2
     plt.rcParams['figure.figsize'] = 8, 7.5
 
@@ -28,6 +37,14 @@ def plot_style(xticks=5,yticks=5):
     plt.tick_params(which='minor', length=5)
     ax.xaxis.set_minor_locator(x_minor_locator)
     ax.yaxis.set_minor_locator(y_minor_locator)
+    ax.tick_params(axis='both', which='both', pad=8, left='on', right='on',top='on',bottom='on')
+
+    plt.rcParams['lines.linewidth'] = 1.0
+    plt.rcParams['lines.dashed_pattern'] = [6, 6] 
+    plt.rcParams['lines.dashdot_pattern'] = [3, 5, 1, 5]
+    plt.rcParams['lines.dotted_pattern'] = [1, 3]
+    plt.rcParams['lines.scale_dashes'] = False
+    plt.rcParams['errorbar.capsize'] = 6
 
 def show_curves_1(Pow=4, dt=0, timeshift=4e4):
 
@@ -36,12 +53,13 @@ def show_curves_1(Pow=4, dt=0, timeshift=4e4):
     plt.rcParams['axes.linewidth'] = 2
     plt.rcParams['figure.figsize'] = 8, 7.5
     plt.rcParams.update({'figure.autolayout': True})
-    zorders = np.array([2,1,1,1])
-    zorders2 = np.array([4,3,3,3])
+    zorders = np.array([2,1,1,1]) + 5
+    zorders2 = np.array([4,3,3,3]) + 5
 
     for rho in range(1,2):
         num = dt + 8*Pow + 2*rho
         for i in range(0,4):
+            idx = i
             data = np.loadtxt('output_lm/cooling_' + names[i] + '_' + str(num) + '.dat')
             data2 = np.loadtxt('output_hm/cooling_' + names[i] + '_' + str(num) + '.dat')
 
@@ -51,10 +69,12 @@ def show_curves_1(Pow=4, dt=0, timeshift=4e4):
             power_ref = data[4000,3]
             power_ref2 = data2[4000,3]
 
-            plt.plot(data[:,1]-timeshift, np.log10(data[:,-2]/power_ref), dashes=(17,4,4,4), color=colors[i], lw=3.5, zorder=zorders[i])
+            plt.plot(data[:,1]-timeshift, np.log10(data[:,-2]/power_ref), color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx])
             plt.scatter(data[max_arg,1]-timeshift, np.log10(data[max_arg, -2]/power_ref), marker=shape[0], s=170,
                         facecolor=colors[i], edgecolor='grey',linewidth=1.5, zorder=zorders2[i])
-            plt.plot(data2[:,1]-timeshift, np.log10(data2[:,-2]/power_ref2),'--', color=colors[i], lw=3, zorder=zorders[i])
+            plt.plot(data2[:,1]-timeshift, np.log10(data2[:,-2]/power_ref2), color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx])
             plt.scatter(data2[max_arg2,1]-timeshift, np.log10(data2[max_arg2, -2]/power_ref2), marker=shape[1], s=170,
                         facecolor=colors[i], edgecolor='grey',linewidth=1.5, zorder=zorders2[i])
 
@@ -65,30 +85,38 @@ def show_curves_1(Pow=4, dt=0, timeshift=4e4):
                 plt.scatter(data[max_arg,1]-timeshift, np.log10(data[max_arg, 3]/power_ref), marker=shape[2], s=170,
                         facecolor=colors[i], edgecolor='grey',linewidth=1.5, zorder=zorders2[i])
 
-                plt.plot([-10,-20], [-10,-20],'-', lw=3, color=colors[0], label=labels[0])
-                plt.plot([-10,-20], [-10,-20], '-', lw=3, color=colors[1], label=labels[1])
-                plt.plot([-10,-20], [-10,-20], '-', lw=3, color=colors[2], label=labels[2])
-                plt.plot([-10,-20], [-10,-20], '-', lw=3, color=colors[3], label=labels[3])
+                plt.plot([-10,-20], [-10,-20], color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx],label=labels[idx])
+                idx += 1
+                plt.plot([-10,-20], [-10,-20], color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx],label=labels[idx])
+                idx += 1
+                plt.plot([-10,-20], [-10,-20], color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx],label=labels[idx])
+                idx += 1
+                plt.plot([-10,-20], [-10,-20], color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx],label=labels[idx])
 
-        plt.legend(loc='upper right', fontsize=20, frameon=False)
+        plt.legend(loc='upper right', fontsize=21, frameon=False)
 
         plt.xticks(np.linspace(0,35,8),fontsize=22)
         plt.yticks(np.linspace(-4,3,8),fontsize=22)
         plt.ylim(-3.4, 3.1)
         plt.xlim(-1,21)
-        plt.ylabel('$\\rm log $$L^{\infty}_{\\rm{s,h}}/L_{\\rm{c}}^{\infty}$', fontsize=26)
-        plt.xlabel('$t \\thinspace \\rm{yr}$', fontsize=26)
+        plt.ylabel('$\\rm log$ $L^{\infty}_{\\rm{s,h}}/L_{\\rm{c}}^{\infty}$', fontsize=26)
+        plt.xlabel('$t \\thinspace \\thinspace \\thinspace \\rm{yr}$', fontsize=26)
 
         plt.text(6,0.2,'$\\rm HEATER$',fontsize=22)
         #plt.text(6,1.5,'$\\rm H_{0} = 5\\times 10^{2} H_{c} $',fontsize=22)
-        plt.text(6.5,2.6,'$\\rm \\rho_{1} = 10^{11} \\thinspace g \\thinspace cm^{-3}$',fontsize=22)
-        plt.text(8,-1.3,'$\\rm SURFACE, \\thinspace M = 1.40 M_{\odot}$',fontsize=22)
-        plt.text(5,-2.8,'$\\rm SURFACE, \\thinspace M = 1.85 M_{\odot}$',fontsize=22)
+        plt.text(6.5,2.6,'$\\rm \\rho_{1} = 10^{11} \\thinspace \\thinspace g \\thinspace cm^{-3}$',fontsize=22)
+        plt.text(8,-1.3,'$\\rm SURFACE,$ $M = 1.40 \\thinspace \\rm M \odot$',fontsize=22)
+        plt.text(5,-2.8,'$\\rm SURFACE,$ $M = 1.85 \\thinspace \\rm M \odot$',fontsize=22)
 
         plt.savefig('fig1.eps',format='eps')
         plt.show()
 
 def show_curves_2(Pow=4, dt=0, timeshift=4e4):
+    plot_style(xticks=5,yticks=5)
 
     plt.rcParams['axes.linewidth'] = 2
     plt.rcParams['figure.figsize'] = 8, 7.5
@@ -99,6 +127,7 @@ def show_curves_2(Pow=4, dt=0, timeshift=4e4):
     for rho in range(2,3):
         num = dt + 8*Pow + 2*rho
         for i in range(0,4):
+            idx = i
             data = np.loadtxt('output_lm/cooling_' + names[i] + '_' + str(num) + '.dat')
             data2 = np.loadtxt('output_hm/cooling_' + names[i] + '_' + str(num) + '.dat')
 
@@ -119,10 +148,12 @@ def show_curves_2(Pow=4, dt=0, timeshift=4e4):
             plt.ylim(-1.1,-0.4)
             ax2.xaxis.set_minor_locator(x_minor_locator)
             ax2.yaxis.set_minor_locator(y_minor_locator)
+            ax2.tick_params(axis='both', which='both', pad=8, left='on', right='on',top='on',bottom='on')
 
-            plt.plot(data[:,1]-timeshift, np.log10(data[:,-2]/power_ref), dashes=(17,4,4,4), color=colors[i], lw=3.5, zorder=zorders[i])
+            plt.plot(data[:,1]-timeshift, np.log10(data[:,-2]/power_ref), color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx])
             plt.scatter(data[max_arg,1]-timeshift, np.log10(data[max_arg, -2]/power_ref), marker=shape[0], s=170,
-                        facecolor=colors[i], edgecolor='grey',linewidth=1.5, zorder=zorders2[i])
+                        facecolor=colors[i], edgecolor='grey',linewidth=1.5, zorder=order[idx]+1)
 
             ax3 = plt.subplot(3,1,3)
             x_minor_locator = AutoMinorLocator(5)
@@ -135,9 +166,12 @@ def show_curves_2(Pow=4, dt=0, timeshift=4e4):
             plt.ylim(-3.3,-0.5)
             ax3.xaxis.set_minor_locator(x_minor_locator)
             ax3.yaxis.set_minor_locator(y_minor_locator)
-            plt.plot(data2[:,1]-timeshift, np.log10(data2[:,-2]/power_ref2),'--', color=colors[i], lw=3, zorder=zorders[i])
+            ax3.tick_params(axis='both', which='major', pad=8)
+            ax3.tick_params(axis='both', which='both', pad=8, left='on', right='on',top='on',bottom='on')
+            plt.plot(data2[:,1]-timeshift, np.log10(data2[:,-2]/power_ref2), color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx])
             plt.scatter(data2[max_arg2,1]-timeshift, np.log10(data2[max_arg2, -2]/power_ref2), marker=shape[1], s=170,
-                        facecolor=colors[i], edgecolor='grey',linewidth=1.5, zorder=zorders2[i])
+                        facecolor=colors[i], edgecolor='grey',linewidth=1.5, zorder=order[idx]+1)
 
             if i==0:
 
@@ -152,15 +186,17 @@ def show_curves_2(Pow=4, dt=0, timeshift=4e4):
                 plt.xlim(-1,21)
                 ax1.xaxis.set_minor_locator(x_minor_locator)
                 ax1.yaxis.set_minor_locator(y_minor_locator)
+                ax1.tick_params(axis='both', which='major', pad=8)
+                ax1.tick_params(axis='both', which='both', pad=8, left='on', right='on',top='on',bottom='on')
                 max_arg = 4000 + np.argmax(data[4000:, 3])
                 plt.plot(data[:,1]-timeshift, np.log10(data[:,3]/power_ref), color=colors[i], lw=3.5)
                 plt.scatter(data[max_arg,1]-timeshift, np.log10(data[max_arg, 3]/power_ref), marker=shape[2], s=170,
                         facecolor=colors[i], edgecolor='grey',linewidth=1.5, zorder=zorders2[i])
 
-                plt.plot([-10,-20], [-10,-20],'-', lw=3, color=colors[0], label=labels[0])
-                plt.plot([-10,-20], [-10,-20], '-', lw=3, color=colors[1], label=labels[1])
-                plt.plot([-10,-20], [-10,-20], '-', lw=3, color=colors[2], label=labels[2])
-                plt.plot([-10,-20], [-10,-20], '-', lw=3, color=colors[3], label=labels[3])
+                #plt.plot([-10,-20], [-10,-20],'-', lw=3, color=colors[0], label=labels[0])
+                #plt.plot([-10,-20], [-10,-20], '-', lw=3, color=colors[1], label=labels[1])
+                #plt.plot([-10,-20], [-10,-20], '-', lw=3, color=colors[2], label=labels[2])
+                #plt.plot([-10,-20], [-10,-20], '-', lw=3, color=colors[3], label=labels[3])
 
         plt.legend(loc='upper right', fontsize=20, frameon=False)
 
@@ -168,19 +204,19 @@ def show_curves_2(Pow=4, dt=0, timeshift=4e4):
         plt.xlim(-1,21)
         plt.setp(ax2.get_xticklabels(), visible=False)
         plt.setp(ax1.get_xticklabels(), visible=False)
-        plt.ylabel('$\\rm log $$L^{\infty}_{\\rm{s}}/L_{\\rm{c}}^{\infty}$', fontsize=26)
-        plt.xlabel('$t \\thinspace \\rm{yr}$', fontsize=26)
+        plt.ylabel('$\\rm log $ $L^{\infty}_{\\rm{s}}/L_{\\rm{c}}^{\infty}$', fontsize=26, labelpad=18)
+        plt.xlabel('$t \\thinspace \\thinspace \\thinspace \\rm{yr}$', fontsize=26)
 
         plt.subplot(3,1,1)
         plt.text(2,0.4,'$\\rm HEATER$',fontsize=22)
         #plt.text(13,2.4,'$\\rm H_{0} = 5\\times 10^{2} H_{c} $',fontsize=22)
-        plt.text(13,2.4,'$\\rm \\rho_{1} = 10^{12} \\thinspace g \\thinspace cm^{-3}$',fontsize=22)
-        plt.ylabel('$\\rm log $$L^{\infty}_{\\rm{h}}/L_{\\rm{c}}^{\infty}$', fontsize=26)
+        plt.text(13,2.4,'$\\rm \\rho_{1} = 10^{12} \\thinspace \\thinspace g \\thinspace cm^{-3}$',fontsize=22)
+        plt.ylabel('$\\rm log $ $L^{\infty}_{\\rm{h}}/L_{\\rm{c}}^{\infty}$', fontsize=26, labelpad=36)
         plt.subplot(3,1,2)
-        plt.text(9,-0.55,'$\\rm SURFACE, \\thinspace M = 1.40 M_{\odot}$',fontsize=22)
-        plt.ylabel('$\\rm log $$L^{\infty}_{\\rm{s}}/L_{\\rm{c}}^{\infty}$', fontsize=26)
+        plt.text(8,-0.55,'$\\rm SURFACE,$ $M = 1.40 \\thinspace \\rm M \odot$',fontsize=22)
+        plt.ylabel('$\\rm log $ $L^{\infty}_{\\rm{s}}/L_{\\rm{c}}^{\infty}$', fontsize=26)
         plt.subplot(3,1,3)
-        plt.text(9,-1.1,'$\\rm SURFACE, \\thinspace M = 1.85 M_{\odot}$',fontsize=22)
+        plt.text(8,-1.1,'$\\rm SURFACE,$ $M = 1.85 \\thinspace \\rm M \odot$',fontsize=22)
 
         plt.savefig('fig2.eps',format='eps')
         plt.show()
@@ -196,131 +232,169 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
     plot_style()
 
     num = dt + 8*Pow + 2*rho
-    numbers = np.array([1, 2, 3, 6, 18])
-    arg_num = np.array([0, 3, 4])
-    dashes = np.array([[20, 4, 20, 4],[3, 3, 3, 3],[10,1e-15,10,1e-15],[10,3,2,3],[12,3,12,3]])
-    thickness = np.array([5.5, 3, 3.5, 2.5, 2])
-    idx = 0
+    plt.rc('text', usetex=True)
+    plt.rcParams.update({'figure.autolayout': True})
+
+    plt.rcParams['ytick.direction'] = 'in'
+    plt.rcParams['xtick.direction'] = 'in'
+
+    plt.rcParams['axes.linewidth'] = 2
+    plt.rcParams['figure.figsize'] = 8, 7.5
 
     ax1 = plt.subplot(2,1,1)
+
     x_minor_locator = AutoMinorLocator(5)
     y_minor_locator = AutoMinorLocator(5)
+
     plt.tick_params(which='both', width=1.7)
     plt.tick_params(which='major', length=9)
     plt.tick_params(which='minor', length=5)
+
     ax1.xaxis.set_minor_locator(x_minor_locator)
     ax1.yaxis.set_minor_locator(y_minor_locator)
+    ax1.tick_params(axis='both', which='both', pad=8, left='on', right='on',top='on',bottom='on')
+
     plt.yticks(np.array([8,8.2,8.4,8.6,8.8,9]),fontsize=20)
     plt.xticks(np.array([9,10,11,12,13,14,15]),fontsize=20)
+
     if(rho==1):
-        plt.ylabel('$\\rm log \\thinspace$$ \\tilde{T} \\thinspace \\rm K$',fontsize=24)
+        plt.ylabel('$\\rm log \\thinspace$$ \\widetilde{T} \\thinspace \\thinspace \\thinspace \\rm [K]$',fontsize=24)
     plt.setp(ax1.get_xticklabels(), visible=False)
     plt.xlim(9,15)
 
-    plt.plot(Tcrit[:,0], np.log10(Tcrit[:,1]*1e9), color=colors[1], lw=1.5)
-    plt.plot(Tcrit[:,0], np.log10(Tcrit[:,2]*1e9), color=colors[2], lw=1.5)
-    plt.plot(Tcrit[:,0], np.log10(Tcrit[:,3]*1e9), color=colors[3], lw=1.5)
+    plt.fill_between(Tcrit[:,0], np.ones(len(Tcrit[:,0])), np.log10(Tcrit[:,2]*1e9), facecolor=colors2[2], interpolate=True, alpha=1)
+    plt.fill_between(Tcrit[:,0], np.ones(len(Tcrit[:,0])), np.log10(Tcrit[:,1]*1e9), facecolor=colors2[1], interpolate=True, alpha=1)
+    plt.fill_between(Tcrit[:,0], np.ones(len(Tcrit[:,0])), np.log10(Tcrit[:,3]*1e9), facecolor=colors2[3], interpolate=True, alpha=1)
 
-    plt.fill_between(Tcrit[:,0], np.ones(len(Tcrit[:,0])), np.log10(Tcrit[:,1]*1e9), facecolor=colors[1], interpolate=True, alpha=0.25)
-    plt.fill_between(Tcrit[:,0], np.ones(len(Tcrit[:,0])), np.log10(Tcrit[:,2]*1e9), facecolor=colors[2], interpolate=True, alpha=0.25)
-    plt.fill_between(Tcrit[:,0], np.ones(len(Tcrit[:,0])), np.log10(Tcrit[:,3]*1e9), facecolor=colors[3], interpolate=True, alpha=0.25)
+    plt.plot(Tcrit[:,0], np.log10(Tcrit[:,1]*1e9), color=colors[1], lw=2)
+    plt.plot(Tcrit[:,0], np.log10(Tcrit[:,2]*1e9), color=colors[2], lw=2)
+    plt.plot(Tcrit[:,0], np.log10(Tcrit[:,3]*1e9), color=colors[3], lw=2)
 
     if rho==2:
         plt.ylim(8.17,8.73)
-        plt.text(9.2,8.23,'$\\rho_{1} = 10^{12} \\thinspace \\rm g \\thinspace cm^{-3}$', fontsize=23)
-    elif rho==3:
-        plt.ylim(8.17,8.63)
-        plt.text(9.2,8.22,'$\\rho_{1} = 10^{13} \\thinspace \\rm g \\thinspace cm^{-3}$', fontsize=23)
+        plt.text(9.2,8.32,'$\\rho_{1} = 10^{12} \\thinspace \\thinspace \\rm g \\thinspace cm^{-3}$', fontsize=23)
+        idx = 0
+        plt.plot([-10,-20], [-10,-20], color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),label=labels[idx])
+        idx += 1
+        plt.plot([-10,-20], [-10,-20], color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),label=labels[idx])
+        idx += 1
+        plt.plot([-10,-20], [-10,-20], color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),label=labels[idx])
+        idx += 1
+        plt.plot([-10,-20], [-10,-20], color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),label=labels[idx])
+        plt.legend(loc='upper left',fontsize=21, frameon=False)
     else:
         plt.ylim(8.17,8.83)
-        plt.text(9.1,8.74,'$\\rho_{1} = 10^{11} \\thinspace \\rm g \\thinspace cm^{-3}$', fontsize=23)
-        plt.text(9.1,8.67,'$\\rm M = 1.40 \\thinspace M_{\\odot}$',fontsize=23)
+        plt.text(9.1,8.74,'$\\rho_{1} = 10^{11} \\thinspace \\thinspace \\rm g \\thinspace cm^{-3}$', fontsize=21)
+        plt.text(9.1,8.67,'$M = 1.40 \\thinspace \\rm M \\odot$',fontsize=21)
 
-    for time in numbers[:3]:
+    for time in [1,3]:
         for i in range(3,-1,-1):
+            idx = i
             if time==1 and dt==0:
                 data = np.loadtxt('temperature_lm/temperature_' + names[i] + '_' + str(num+1) + '.dat')
-                plt.plot(np.log10(data[:,0]), np.log10(data[:,time]),  dashes = dashes[idx,:], color=colors[i], lw=thickness[idx])
+                plt.plot(np.log10(data[:,0]), np.log10(data[:,time]), color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx])
             else:
                 data = np.loadtxt('temperature_lm/temperature_' + names[i] + '_' + str(num) + '.dat')
-                plt.plot(np.log10(data[:,0]), np.log10(data[:,time]), dashes = dashes[idx,:], color=colors[i], lw=thickness[idx])
-        idx += 1
+                plt.plot(np.log10(data[:,0]), np.log10(data[:,time]), color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx])
 
     if rho==1:
-        plt.text(12.45, 8.5, '$T < T_{\\rm cr}$', fontsize=23)
+        plt.text(13, 8.55, '$T < T_{\\rm cr}$', fontsize=23)
+        plt.text(9.5,8.245, '$t=0.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
+        plt.text(10.45,8.42, '$t=0.5 \\thinspace \\thinspace \\rm yr$',fontsize=20)
+
+        plt.text(11.82,8.67,'GIPSF',fontsize=14,rotation=86)
+        plt.text(12.23,8.68,'AWP2',fontsize=14,rotation=84)
+        plt.text(13.03,8.75,'SCLBL',fontsize=14,rotation=83)
+
+        plt.text(13.74,8.42,'GIPSF',fontsize=14,rotation=-90)
+        plt.text(14.18,8.47,'AWP2, SCLBL',fontsize=14,rotation=-89)
+        
     elif rho==2:
-        plt.text(13.11, 8.5, '$T < T_{\\rm cr}$', fontsize=23)
-        plt.plot([-10,-20], [-10,-20], lw=thickness[4], color='black', dashes=dashes[4,:], label='$t = 15.0 \\rm \\thinspace yr$')
-        plt.plot([-10,-20], [-10,-20], lw=thickness[3], color='black', dashes=dashes[3,:], label='$t = 3.0 \\rm \\thinspace yr$')
-        plt.plot([-10,-20], [-10,-20], lw=thickness[2], color='black', dashes=dashes[2,:], label='$t = 0.5 \\rm \\thinspace yr$')
-        plt.plot([-10,-20], [-10,-20], lw=thickness[1], color='black', dashes=dashes[1,:], label='$t = 0.1 \\rm \\thinspace yr$')
-        plt.plot([-10,-20], [-10,-20], lw=thickness[0], color='black', dashes=dashes[0,:], label='$t = 0.0 \\rm \\thinspace yr$')
-        plt.legend(loc='upper left',fontsize=20,frameon=False)
-    else:
-        plt.text(13.11, 8.5, '$T < T_{\\rm cr}$', fontsize=23)
+        plt.text(13.05, 8.55, '$T < T_{\\rm cr}$', fontsize=23)
+        plt.text(12.01,8.23, '$t=0.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
+        plt.text(11.015,8.54, '$t=0.5 \\thinspace \\thinspace \\rm yr$',fontsize=20)
+        
+        plt.text(11.82,8.67,'GIPSF',fontsize=14,rotation=86)
+        plt.text(12.23,8.68,'AWP2',fontsize=14,rotation=84)
+        plt.text(13.00,8.69,'SCLBL',fontsize=14,rotation=83)
 
-        plt.plot([-10,-20], [-10,-20], lw=thickness[4], color='black', dashes=dashes[4,:], label='$t = 15.0 \\rm \\thinspace yr$')
-        plt.plot([-10,-20], [-10,-20], lw=thickness[3], color='black', dashes=dashes[3,:], label='$t = 3.0 \\rm \\thinspace yr$')
-        plt.plot([-10,-20], [-10,-20], lw=thickness[2], color='black', dashes=dashes[2,:], label='$t = 0.5 \\rm \\thinspace yr$')
-        plt.plot([-10,-20], [-10,-20], lw=thickness[1], color='black', dashes=dashes[1,:], label='$t = 0.1 \\rm \\thinspace yr$')
-        plt.plot([-10,-20], [-10,-20], lw=thickness[0], color='black', dashes=dashes[0,:], label='$t = 0.0 \\rm \\thinspace yr$')
-        plt.legend(loc='upper left',fontsize=20, frameon=False)
-
+        plt.text(13.74,8.42,'GIPSF',fontsize=14,rotation=-90)
+        plt.text(14.20,8.43,'AWP2, SCLBL',fontsize=14,rotation=-89)
     idx = 0
+
     ax2 = plt.subplot(2,1,2)
+
     x_minor_locator = AutoMinorLocator(5)
     y_minor_locator = AutoMinorLocator(5)
+
     plt.tick_params(which='both', width=1.7)
     plt.tick_params(which='major', length=9)
     plt.tick_params(which='minor', length=5)
+
     ax2.xaxis.set_minor_locator(x_minor_locator)
     ax2.yaxis.set_minor_locator(y_minor_locator)
-    if(rho==2 or rho==3):
+    ax2.tick_params(axis='both', which='both', pad=8, left='on', right='on',top='on',bottom='on')
+
+    if rho==2:
         plt.yticks(np.array([8,8.1,8.2,8.3,8.4,8.5,8.6]),fontsize=20)
     else:
         plt.yticks(np.array([8,8.2,8.4,8.6,8.8,9]),fontsize=20)
-        plt.ylabel('$\\rm log \\thinspace$$ \\tilde{T}\\thinspace \\rm K$',fontsize=24)
-    plt.xlabel('$\\rm log \\thinspace$$\\rho \\thinspace \\rm g \\thinspace cm^{-3}$',fontsize=24)
+        plt.ylabel('$\\rm log \\thinspace$$ \\widetilde{T} \\thinspace \\thinspace \\thinspace \\rm [K]$',fontsize=24)
+    plt.xlabel('$\\rm log \\thinspace$$\\rho \\thinspace \\thinspace \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=24)
     plt.xticks(np.array([9,10,11,12,13,14,15]),fontsize=20)
     plt.xlim(9, 15)
 
-    plt.plot(Tcrit[:,0], np.log10(Tcrit[:,1]*1e9), color=colors[1], lw=1.5)
-    plt.plot(Tcrit[:,0], np.log10(Tcrit[:,2]*1e9), color=colors[2], lw=1.5)
-    plt.plot(Tcrit[:,0], np.log10(Tcrit[:,3]*1e9), color=colors[3], lw=1.5)
+    plt.fill_between(Tcrit[:,0], np.ones(len(Tcrit[:,0])), np.log10(Tcrit[:,2]*1e9), facecolor=colors2[2], interpolate=True, alpha=1)
+    plt.fill_between(Tcrit[:,0], np.ones(len(Tcrit[:,0])), np.log10(Tcrit[:,1]*1e9), facecolor=colors2[1], interpolate=True, alpha=1)
+    plt.fill_between(Tcrit[:,0], np.ones(len(Tcrit[:,0])), np.log10(Tcrit[:,3]*1e9), facecolor=colors2[3], interpolate=True, alpha=1)
 
-    plt.fill_between(Tcrit[:,0], np.ones(len(Tcrit[:,0])), np.log10(Tcrit[:,1]*1e9), facecolor=colors[1], interpolate=True, alpha=0.25)
-    plt.fill_between(Tcrit[:,0], np.ones(len(Tcrit[:,0])), np.log10(Tcrit[:,2]*1e9), facecolor=colors[2], interpolate=True, alpha=0.25)
-    plt.fill_between(Tcrit[:,0], np.ones(len(Tcrit[:,0])), np.log10(Tcrit[:,3]*1e9), facecolor=colors[3], interpolate=True, alpha=0.25)
+    plt.plot(Tcrit[:,0], np.log10(Tcrit[:,1]*1e9), color=colors[1], lw=2)
+    plt.plot(Tcrit[:,0], np.log10(Tcrit[:,2]*1e9), color=colors[2], lw=2)
+    plt.plot(Tcrit[:,0], np.log10(Tcrit[:,3]*1e9), color=colors[3], lw=2)
 
     if rho==2:
         plt.ylim(8.17,8.53)
-    elif rho==3:
-        plt.ylim(8.17,8.35)
     else:
         plt.ylim(8.17,8.68)
 
-    for time in numbers[arg_num]:
+    for time in [6,18]:
         for i in range(3,-1,-1):
+            idx = i
             if time==1 and dt==0:
                 data = np.loadtxt('temperature_lm/temperature_' + names[i] + '_' + str(num+1) + '.dat')
-                plt.plot(np.log10(data[:,0]), np.log10(data[:,time]),  dashes = dashes[arg_num[idx],:], color=colors[i], lw=thickness[arg_num[idx]])
+                plt.plot(np.log10(data[:,0]), np.log10(data[:,time]), color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx])
             else:
                 data = np.loadtxt('temperature_lm/temperature_' + names[i] + '_' + str(num) + '.dat')
-                plt.plot(np.log10(data[:,0]), np.log10(data[:,time]), dashes = dashes[arg_num[idx],:], color=colors[i], lw=thickness[arg_num[idx]])
+                plt.plot(np.log10(data[:,0]), np.log10(data[:,time]), color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx])
         idx += 1
 
     if rho==1:
-        plt.text(12.45, 8.5, '$T < T_{\\rm cr}$', fontsize=23)
-    elif rho==3:
-        plt.text(12.5, 8.31, '$T < T_{\\rm cr}$', fontsize=23)
+        plt.text(13, 8.55, '$T < T_{\\rm cr}$', fontsize=23)
+        plt.text(9.7,8.35, '$t=15.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
+        plt.text(9.5,8.545, '$t=3.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
+      
     else:
-        plt.text(13, 8.4, '$T < T_{\\rm cr}$', fontsize=23)
-
-    plt.savefig('profile_1.pdf', format='pdf')
+        plt.text(13, 8.45, '$T < T_{\\rm cr}$', fontsize=23)
+        plt.text(9.5,8.4, '$t=3.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
+        plt.text(11.55,8.29, '$t=15.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
+    if rho==1:
+        plt.savefig('profile_1.eps', format='eps')
+        plt.savefig('profile_1.jpeg', format='jpeg')
+    else:
+        plt.savefig('profile_2.eps', format='eps')
+        plt.savefig('profile_2.jpeg', format='jpeg')
     plt.show()
 
-#temperature_profile_profile(rho=2)
-#temperature_profile_profile(rho=1)
+temperature_profile_profile(rho=2)
+temperature_profile_profile(rho=1)
 
 
 def timedelay(Pow=5, dt=0):
@@ -380,9 +454,10 @@ def timedelay(Pow=5, dt=0):
     alpha = np.array([0.5, 0.5, 0.4, 0.5])
     zorder = np.array([4,2,2,3])
 
-    for i,tp in zip(range(0,4),['--','-','-','-']):
+    for idx in range(4):
         #plt.fill_between(rho_sample, y_sample[i,:,0], y_sample[i,:,1], facecolor=colors[i], interpolate=True, alpha=alpha[i])
-        plt.plot(rho_sample, y_sample[i,:,2],tp,label=labels[i],lw=3,color=colors[i],zorder=zorder[i])
+        plt.plot(rho_sample, y_sample[idx,:,2], color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx],label=labels[idx])
 
     plt.xticks([10.5,11,11.5,12,12.5,13],fontsize=20)
     plt.xlim(11.4,13)
@@ -390,8 +465,8 @@ def timedelay(Pow=5, dt=0):
     plt.yticks([0,2,4,6,8,10],fontsize=20)
     plt.ylim(1,10)
 
-    plt.xlabel('$\\rm log \\thinspace$$\\rho_{1} \\thinspace \\rm g \\thinspace cm^{-3}$',fontsize=24)
-    plt.ylabel('$\Delta t_{\\rm r}$ $\\rm yr$',fontsize=24)
+    plt.xlabel('$\\rm log \\thinspace$$\\rho_{1} \\thinspace \\thinspace  \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=24)
+    plt.ylabel('$\Delta t_{\\rm r}$$\\thinspace \\thinspace  \\thinspace \\rm yr$',fontsize=24)
 
     #plt.text(11.45,6.8,'$ H_{\\rm{0}}/H_{\\rm{c}} = 10^{2}$', fontsize=23)
     #plt.text(11.45,9,'$ M = 1.4 M_{\odot}$', fontsize=25)
@@ -400,6 +475,6 @@ def timedelay(Pow=5, dt=0):
     plt.savefig('timedelay.eps', format='eps')
     plt.show()
 
-timedelay(Pow=5, dt=0)
+#timedelay(Pow=5, dt=0)
 
 

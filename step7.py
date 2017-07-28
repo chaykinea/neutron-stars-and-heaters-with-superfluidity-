@@ -5,11 +5,32 @@ from scipy import integrate
 from scipy import stats
 from scipy import optimize
 from matplotlib.ticker import AutoMinorLocator
+from matplotlib import rc
+
+names = np.array(['SF0','AWP2', 'GIPSF', 'SCLBL'])
+labels = np.array(['No SF','AWP2', 'GIPSF', 'SCLBL'])
+colors = np.array(['black','darkblue','red','darkorange'])
+shape = np.array(['s','^','o','d'])
+line_thickness = np.array([4.8, 2.7,2.2,3.2])
+dashes = np.array([[2,1e-15],[4,8],[20,3],[9,6]])
+order = np.array([1,4,2,3])
+
+order2 = np.array([1,2,3,4])
+colors2 = np.array(['green','orange','red','blue'])
+dashes2 = np.array([[2,1e-15],[7,1],[3,2],[1.5,3]])
+dashes2 = np.array([[2,1e-15],[7,1e-15],[3,1e-15],[1.5,1e-15]])
+line_thickness2 = np.array([6,4.7,3.4,2.1])
 
 def plot_style(xticks=5,yticks=5):
-
+ 
+    global ax
+    
+    plt.rc('text', usetex=True)
+    #plt.rcParams['mathtext.fontset'] = 'cm'
+    #plt.rcParams['mathtext.rm'] = 'serif'
     plt.rcParams.update({'figure.autolayout': True})
-    #plt.tight_layout()
+    plt.rcParams['ytick.direction'] = 'in'
+    plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['axes.linewidth'] = 2
     plt.rcParams['figure.figsize'] = 8, 7.5
 
@@ -21,7 +42,14 @@ def plot_style(xticks=5,yticks=5):
     plt.tick_params(which='minor', length=5)
     ax.xaxis.set_minor_locator(x_minor_locator)
     ax.yaxis.set_minor_locator(y_minor_locator)
+    ax.tick_params(axis='both', which='both', pad=8, left='on', right='on',top='on',bottom='on')
 
+    plt.rcParams['lines.linewidth'] = 1.0
+    plt.rcParams['lines.dashed_pattern'] = [6, 6] 
+    plt.rcParams['lines.dashdot_pattern'] = [3, 5, 1, 5]
+    plt.rcParams['lines.dotted_pattern'] = [1, 3]
+    plt.rcParams['lines.scale_dashes'] = False
+    plt.rcParams['errorbar.capsize'] = 6
 
 MSun = 1.98892e33
 LSun = 3.846e33
@@ -33,16 +61,15 @@ Mn0 = 1.6749286e-24
 Mp0 = 1.6726231e-24
 Mb = (Mn0 + Mp0) / 2
 
-M_dot = 1e-9 * MSun / from_yr_to_sec
+M_dot = 1e-9 * MSun / from_yr_to_sec # IMPORTANT
 
 data = np.loadtxt('heaters_data.dat')
 rho_1 = data[:, 0]
 rho_2 = data[:, 0] * (1 + data[:, 2])
 y = data[:, 1]
 
-
 _star_model = np.loadtxt('data/BSK21_1.40.dat', skiprows=2)
-model_param = 1.40
+model_param = 1.40 # IMPORTANT
 _nb = interpolate.interp1d(np.log10(_star_model[:, 3]), _star_model[:, 5], kind='linear', fill_value='extrapolate')
 _ne = interpolate.interp1d(np.log10(_star_model[:, 3]), _star_model[:, 6], kind='linear', fill_value='extrapolate')
 _nm = interpolate.interp1d(np.log10(_star_model[:, 3]), _star_model[:, 7], kind='linear', fill_value='extrapolate')
@@ -99,6 +126,7 @@ def f2(x,a,b,c,d):
     return output
 
 dV = lambda r: 4*np.pi*r*r/relativity_sqrt(r)
+dV2 = lambda r: 4*np.pi*r*r
 V = lambda r1,r2: integrate.quad(dV,r1,r2)[0]
 
 
@@ -109,9 +137,13 @@ def power():
 
     Q_total = (y * 1e3 * from_ev_to_erg) * M_dot / Mb
     Q_total_cum = np.cumsum(Q_total)
+    Q_total_cum = np.append(Q_total_cum,Q_total_cum[-1])
+    data_plot = np.append(data[:,0],10**15)
 
     rho_sample = np.linspace(9,14,1000)
     r_sample = radii(np.power(10, rho_sample))
+    
+
     #param, mtrx = optimize.curve_fit(f2, r_1, Q_total_cum, p0=[6.49105274e+04,   1.21269574e+06,   3.71309773e+03,   3.13087696e-06])  # M 1.4
     #print(param)
     #print(param[3] * H_guess * param[0]/1e16)
@@ -134,48 +166,158 @@ def power():
     sigma_g_f = interpolate.interp1d(model_param_arr, sigma_g)
     const_1_f = interpolate.interp1d(model_param_arr, const_1)
     const_2_f = interpolate.interp1d(model_param_arr, const_2)
+
     H_f = lambda r: const_1_f(model_param) + const_2_f(model_param) * 1e17 * np.exp(
         -(r - r_0_f(model_param)) ** 2 / sigma_g_f(model_param) ** 2 / 2) / np.sqrt(
         2 * np.pi * sigma_g_f(model_param) ** 2)  # M_dot = 1e-9 M_solar/yr
 
-    plot_style()
-    plt.plot(rho_sample,H_f(r_sample)/1e17,ls='-',lw=3,c='r')
-    plt.xlabel('$\\rm log \\thinspace \\rho $ $\\rm g \\thinspace cm^{-3}$',fontsize=22)
-    plt.ylabel('$\\rm Q_{h}/10^{17}$ $\\rm erg \\thinspace s^{-1} \\thinspace cm^{-3}$',fontsize=22)
-    plt.xticks([9,10,11,12,13,14],fontsize=20)
-    plt.yticks([0,1,2,3,4,5,6],fontsize=20)
-    plt.savefig('fig2.pdf',format='pdf')
-    plt.show()
+    #plot_style()
+    #plt.plot(rho_sample,H_f(r_sample)/1e17,ls='-',lw=3,c='r')
+    #plt.xlabel('$\\rm log \\thinspace \\rho $ $\\rm g \\thinspace cm^{-3}$',fontsize=22)
+    #plt.ylabel('$\\rm Q_{h}/10^{17}$ $\\rm erg \\thinspace s^{-1} \\thinspace cm^{-3}$',fontsize=22)
+    #plt.xticks([9,10,11,12,13,14],fontsize=20)
+    #plt.yticks([0,1,2,3,4,5,6],fontsize=20)
+    #plt.savefig('fig2.pdf',format='pdf')
+    #plt.show()
 
     check = np.zeros_like(rho_sample)
     for i in range(len(check)):
         check[i] = np.abs(np.trapz(H_f(r_sample[:i+1])*np.exp(2*_Phi(np.log10(r_sample[:i+1]))) * dV(r_sample[:i+1]), r_sample[:i+1]))
     
-    aa = np.argmin(np.abs(np.power(10,rho_sample)-3e12))
-    bb = np.argmin(np.abs(np.power(10,rho_sample)-8e11)) 
-    print(10**rho_sample[aa])
-    print(10**rho_sample[bb])
-    aa_int = np.abs(np.trapz(H_f(r_sample[:aa+1])*np.exp(2*_Phi(np.log10(r_sample[:aa+1]))) * dV(r_sample[:aa+1]), r_sample[:aa+1]))
-    bb_int = np.abs(np.trapz(H_f(r_sample[:bb+1])*np.exp(2*_Phi(np.log10(r_sample[:bb+1]))) * dV(r_sample[:bb+1]), r_sample[:bb+1]))
-    print(aa_int)
-    print(bb_int)
-    print(3e1*aa_int)
-    print(6e1*bb_int)
+    #aa = np.argmin(np.abs(np.power(10,rho_sample)-3e12))
+    #bb = np.argmin(np.abs(np.power(10,rho_sample)-8e11)) 
+    #print(10**rho_sample[aa])
+    #print(10**rho_sample[bb])
+    #aa_int = np.abs(np.trapz(H_f(r_sample[:aa+1])*np.exp(2*_Phi(np.log10(r_sample[:aa+1]))) * dV(r_sample[:aa+1]), r_sample[:aa+1]))
+    #bb_int = np.abs(np.trapz(H_f(r_sample[:bb+1])*np.exp(2*_Phi(np.log10(r_sample[:bb+1]))) * dV(r_sample[:bb+1]), r_sample[:bb+1]))
+    #print(aa_int)
+    #print(bb_int)
+    #print(3e1*aa_int)
+    #print(6e1*bb_int)
     
-    plot_style()
+    #plot_style()
     #plt.step(np.log10(data[:,0]), Q_total_cum/1e34,lw=3)
-    plt.plot(rho_sample, check/1e34,lw=3,color='red')
-    plt.xlabel('$\\rm log \\thinspace \\rho $ $\\rm g \\thinspace cm^{-3}$',fontsize=24)
-    plt.ylabel('$\\rm Q_{< \\rho}/10^{34}$ $\\rm erg \\thinspace s^{-1}$',fontsize=24)
+    #plt.plot(rho_sample, check/1e34,lw=3,color='red')
+    #plt.xlabel('$\\rm log \\thinspace \\rho $ $\\rm g \\thinspace cm^{-3}$',fontsize=24)
+    #plt.ylabel('$\\rm Q_{< \\rho}/10^{34}$ $\\rm erg \\thinspace s^{-1}$',fontsize=24)
+    #plt.xticks([9,10,11,12,13,14],fontsize=20)
+    #plt.yticks([0,2,4,6,8,10,12],fontsize=20)
+    #plt.xlim(9,14)
+    #plt.ylim(0,12)
+    #plt.savefig('fig1.pdf',format='pdf')
+    #plt.show()
+
+    num_mass = np.zeros(4)
+    plot_style()
+
+    for rho_max,idx,lb in zip([1e13,10**12.5,1e12,1e11],[3,2,1],['$\\rho_{\\rm acc} = 10^{13} \\rm \\thinspace \\thinspace g \\thinspace cm^{-3}$',
+        '$\\rho_{\\rm acc} = 10^{12.5} \\rm \\thinspace \\thinspace g \\thinspace cm^{-3}$',
+        '$\\rho_{\\rm acc} = 10^{12} \\rm \\thinspace \\thinspace g \\thinspace cm^{-3}$',
+        '$\\rho_{\\rm acc} = 10^{11} \\rm \\thinspace \\thinspace g \\thinspace cm^{-3}$']):
+        num = np.argmin(np.abs(np.power(10,rho_sample)-rho_max))
+        print(rho_sample[num])
+        num_int_max = np.abs(np.trapz(H_f(r_sample[:num+1])*np.exp(2*_Phi(np.log10(r_sample[:num+1]))) * dV(r_sample[:num+1]), r_sample[:num+1]))
+        num_mass[idx] = np.abs(np.trapz(10**rho_sample[:num+1] * dV2(r_sample[:num+1]), r_sample[:num+1])) / MSun
+        print(num_mass[idx])
+        num_int = np.ones(len(rho_sample)) * num_int_max
+        for int_idx in range(0,num+1):
+            num_int[int_idx] = np.abs(np.trapz(H_f(r_sample[:int_idx+1])*np.exp(2*_Phi(np.log10(r_sample[:int_idx+1]))) * dV(r_sample[:int_idx+1]), r_sample[:int_idx+1]))
+
+        plt.plot(rho_sample, num_int/1e34,color=colors2[idx],
+                     linewidth=line_thickness2[idx], dashes = (dashes2[idx,0],dashes2[idx,1]),zorder=order2[idx],label=lb)
+    
+    #plt.text(11.8,0.92,'$\Delta M_{\\rm acc} = 7.1 \\times 10^{-6} \\thinspace \\rm M \\odot$',fontsize=20)
+    plt.text(12.1,2.65,'$\Delta M_{\\rm acc} = 6.2 \\times 10^{-5} \\thinspace \\rm M \\odot$',fontsize=18)
+    plt.text(12.7,7.85,'$1.7 \\times 10^{-4} \\thinspace \\rm M \\odot$',fontsize=18)
+    plt.text(12.885,10.35,'$7.3 \\times 10^{-4} \\thinspace \\rm M \\odot$',fontsize=18)
+    plt.text(9.3,8.2,'$\dot{M} = 10^{-8} \\thinspace \\rm M \\odot / yr$',fontsize=22)
+
+    plt.xlabel('$\\rm log \\thinspace$$\\rho \\thinspace \\thinspace \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=24)
+    plt.ylabel('$L_{\\rm h}^{\infty}$  $/ (\\rm 10^{35} \\thinspace erg \\thinspace s^{-1})$',fontsize=24)
+    plt.step(np.log10(data_plot), Q_total_cum/1e34,linestyle='--',lw=3,color='black',zorder=1,label='$\\rm Haensel \\thinspace \\thinspace and \\thinspace \\thinspace Zdunik \\thinspace \\thinspace (2008)$')
+    output = np.vstack([data_plot,Q_total_cum/1e34])
+    np.savetxt('curve_from_HZ_2008.dat',output.T,fmt='%1.5e')
     plt.xticks([9,10,11,12,13,14],fontsize=20)
     plt.yticks([0,2,4,6,8,10,12],fontsize=20)
     plt.xlim(9,14)
-    plt.ylim(0,12)
-    plt.savefig('fig1.pdf',format='pdf')
+    plt.ylim(0,12.5)
+    plt.legend(loc='upper left',fontsize=20,scatterpoints=1,frameon=False)
+    plt.savefig('fig112.eps',format='eps')
     plt.show()
 
-#power()
+power()
 
+def power2():
+
+    r_1 = radii(rho_1)
+    r_2 = radii(rho_2)
+
+    Q_total = (y * 1e3 * from_ev_to_erg) * M_dot / Mb
+    Q_total_cum = np.cumsum(Q_total)
+
+    rho_sample = np.linspace(9,14,1000)
+    r_sample = radii(np.power(10, rho_sample))
+
+    #param, mtrx = optimize.curve_fit(f2, r_1, Q_total_cum, p0=[6.49105274e+04,   1.21269574e+06,   3.71309773e+03,   3.13087696e-06])  # M 1.4
+    #print(param)
+    #print(param[3] * H_guess * param[0]/1e16)
+
+    r_0 = np.array(
+        [1.20413015e+06, 1.21000074e+06, 1.21203074e+06, 1.21269574e+06, 1.21353249e+06, 1.21448985e+06, 1.21486413e+06,
+         1.21161929e+06])
+    sigma_g = np.array(
+        [4.38291763e+03, 3.97737319e+03, 3.78693639e+03, 3.71309773e+03, 3.60523861e+03, 3.43057815e+03, 3.26194154e+03,
+         2.68581589e+03])
+    const_1 = np.array(
+        [1.66225679807e16, 1.86808408312e16, 1.98349866253e16, 2.03226874478e16, 2.10820556759e16, 2.2441279112e16,
+         2.39298439565e16, 3.80131342314e16])
+    const_2 = np.array(
+        [6.39198181e+04, 6.44242849e+04, 6.47562763e+04, 6.49105274e+04, 6.51666607e+04, 6.56611002e+04, 6.62462312e+04,
+         6.64638989e+04])
+    model_param_arr = np.array([1.40, 1.50, 1.55, 1.57, 1.60, 1.65, 1.70, 1.85])
+
+    r_0_f = interpolate.interp1d(model_param_arr, r_0)
+    sigma_g_f = interpolate.interp1d(model_param_arr, sigma_g)
+    const_1_f = interpolate.interp1d(model_param_arr, const_1)
+    const_2_f = interpolate.interp1d(model_param_arr, const_2)
+
+    H_f = lambda r: const_1_f(model_param) + const_2_f(model_param) * 1e17 * np.exp(
+        -(r - r_0_f(model_param)) ** 2 / sigma_g_f(model_param) ** 2 / 2) / np.sqrt(
+        2 * np.pi * sigma_g_f(model_param) ** 2)  # M_dot = 1e-9 M_solar/yr
+
+    check = np.zeros_like(rho_sample)
+    for i in range(len(check)):
+        check[i] = np.abs(np.trapz(H_f(r_sample[:i+1])*np.exp(2*_Phi(np.log10(r_sample[:i+1]))) * dV(r_sample[:i+1]), r_sample[:i+1]))
+    
+    num_mass = np.zeros(4)
+    plot_style()
+
+    for rho_max,idx,lb in zip([1e13,10**12.5,1e12,1e11],[3,2,1],['$\\rho_{\\rm acc} = 10^{13} \\rm \\thinspace \\thinspace g \\thinspace cm^{-3}$',
+'$\\rho_{\\rm acc} = 10^{12.5} \\rm \\thinspace \\thinspace g \\thinspace cm^{-3}$',
+'$\\rho_{\\rm acc} = 10^{12} \\rm \\thinspace \\thinspace g \\thinspace cm^{-3}$',
+'$\\rho_{\\rm acc} = 10^{11} \\rm \\thinspace \\thinspace g \\thinspace cm^{-3}$']):
+        num = np.argmin(np.abs(np.power(10,rho_sample)-rho_max))
+        print(rho_sample[num])
+        num_int_max = np.abs(np.trapz(H_f(r_sample[:num+1])*np.exp(2*_Phi(np.log10(r_sample[:num+1]))) * dV(r_sample[:num+1]), r_sample[:num+1]))
+        num_mass[idx] = np.abs(np.trapz(10**rho_sample[:num+1] * dV2(r_sample[:num+1]), r_sample[:num+1])) / MSun
+        times = np.array([-1000, -0.0000001, 0, 365, 365.0000001, 1000]) - 365
+        powers = np.ones(len(times)) * num_int_max / 1e34
+        powers[:2] = 0
+        powers[-2:] = 0
+        plt.plot(times, powers,color=colors2[idx],
+                     linewidth=line_thickness2[idx], dashes = (dashes2[idx,0],dashes2[idx,1]),zorder=order2[idx],label=lb)
+    
+    plt.xlabel('$\\rm Days$',fontsize=22)
+    plt.ylabel('$L_{\\rm h}^{\infty}$  $(\\rm 10^{35} \\thinspace erg \\thinspace s^{-1})$',fontsize=24)
+    plt.xticks([-500,-250,0,250,500,750,1000],fontsize=20)
+    plt.yticks([0,2,4,6,8,10,12],fontsize=20)
+    plt.xlim(-365,500)
+    plt.ylim(0,12.5)
+    plt.legend(loc='upper right',fontsize=20,scatterpoints=1,frameon=False)
+    plt.savefig('fig1111.pdf',format='pdf')
+    plt.show()
+
+power2()
 
 def plot1():
     plot_style()
@@ -188,27 +330,62 @@ def plot1():
         print(config[i,:])
         data1 = np.loadtxt('output/cooling_AWP2_' + str(i) + '.dat')
         data2 = np.loadtxt('output/cooling_GIPSF_' + str(i) + '.dat')
-        data3 = np.loadtxt('output/cooling_SCLBL_' + str(i) + '.dat')
+        data3 = np.loadtxth('output/cooling_SCLBL_' + str(i) + '.dat')
         data = np.loadtxt('output/cooling_SF0_' + str(i) + '.dat')
 
-        plt.plot((data1[:, 1]-1.00145e3)*365, data1[:, 0]*k_b, lw=3, color='red', ls='-',zorder=1)
-        plt.plot((data2[:, 1]-1.00145e3)*365, data2[:, 0]*k_b, lw=3, color='green', ls='-',zorder=1)
-        plt.plot((data3[:, 1]-1.00145e3)*365, data3[:, 0]*k_b, lw=3, color='blue', ls='-',zorder=1)
-        plt.plot((data[:, 1]-1.00145e3)*365, data[:, 0]*k_b, lw=4, color='black', dashes=(10,10),zorder=1)
+        a = 4803
 
-    plt.scatter(t_MAXI, T_MAXI_model_II, s=100, color='magenta', marker='o',label='MAXI J0556–332', zorder=2)
-    plt.errorbar(x=t_MAXI, y=T_MAXI_model_II, yerr=err_MAXI, color='magenta', fmt=' ', zorder=2)
+        idx = 0
+        plt.plot((data[:a+1, 1]-1.00145e3)*365, data[:a+1, 0]*k_b, color=colors[idx],
+             linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx],alpha=0.25)
+        idx = 1
+        plt.plot((data1[:a+1, 1]-1.00145e3)*365, data1[:a+1, 0]*k_b, color=colors[idx],
+             linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx],alpha=0.25)
+        idx = 2
+        plt.plot((data2[:a+1, 1]-1.00145e3)*365, data2[:a+1, 0]*k_b, color=colors[idx],
+             linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx],alpha=0.25)
+        idx = 3
+        plt.plot((data3[:a+1, 1]-1.00145e3)*365, data3[:a+1, 0]*k_b, color=colors[idx],
+             linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx],alpha=0.25)
+       
+        
+        idx = 0
+        plt.plot((data[a:, 1]-1.00145e3)*365, data[a:, 0]*k_b, color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx])
+        idx = 1
+        plt.plot((data1[a:, 1]-1.00145e3)*365, data1[a:, 0]*k_b, color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx])
+        idx = 2
+        plt.plot((data2[a:, 1]-1.00145e3)*365, data2[a:, 0]*k_b, color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx])
+        idx = 3
+        plt.plot((data3[a:, 1]-1.00145e3)*365, data3[a:, 0]*k_b, color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx])
+        
+
+    plt.axvline(365,dashes=(15,5),lw=3,color='black')
+    plt.scatter(t_MAXI, T_MAXI_model_II, s=100, color='magenta', marker='o',label='MAXI J0556–332', zorder=6)
+    plt.errorbar(x=t_MAXI, y=T_MAXI_model_II, yerr=err_MAXI, color='magenta', fmt=' ', zorder=6)
     
-    plt.plot([1,2], [1,2], lw=4, color='black', dashes=(10,10), label='No SF')
-    plt.plot([1,2], [1,2], lw=3, color='red', ls='-', label='AWP2')
-    plt.plot([1,2], [1,2], lw=3, color='green', ls='-', label='GIPSF')
-    plt.plot([1,2], [1,2], lw=3, color='blue', ls='-', label='SCLBL')
+    idx = 0
+    plt.plot([1,2], [1,2], color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx],label=labels[idx])
+    idx = 1
+    plt.plot([1,2], [1,2], color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx],label=labels[idx])
+    idx = 2
+    plt.plot([1,2], [1,2], color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx],label=labels[idx])
+    idx = 3
+    plt.plot([1,2], [1,2], color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx],label=labels[idx])
+    
 
 
-    plt.scatter(t_XTE, T_XTE, s=100, color='orange', marker='^',label='XTE J1701–462', zorder=2)
-    plt.errorbar(x=t_XTE, y=T_XTE, yerr=err_XTE, color='orange', fmt=' ',zorder=2)
+    plt.scatter(t_XTE, T_XTE, s=100, color='blue', marker='^',label='XTE J1701–462', zorder=6)
+    plt.errorbar(x=t_XTE, y=T_XTE, yerr=err_XTE, color='blue', fmt=' ',zorder=6)
 
-    plt.legend(loc='upper right',fontsize=18,scatterpoints=1,frameon=False)
+    plt.legend(loc='upper right',fontsize=20,scatterpoints=1,frameon=False)
     #plt.xscale('log')
     #plt.xticks([1,10,100,1000,10000],fontsize=20)
     plt.xticks([-500,-250,0,250,500,750,1000], fontsize=20)
@@ -216,14 +393,14 @@ def plot1():
     plt.ylim(110, 280)
     plt.xlabel('$\\rm Days \\thinspace  \\thinspace  since  \\thinspace  \\thinspace  '
                'end \\thinspace  \\thinspace  of  \\thinspace  \\thinspace outburst$',fontsize=22)
-    plt.ylabel('$\\rm kT^{\infty}_{s}$ $\\rm eV$',fontsize=22)
+    plt.ylabel('$\\rm k$$T^{\infty}_{\\rm s}$ $\\rm eV$',fontsize=22)
 
     plt.xlim(0,1000)
-    plt.savefig('fig_MAXI_XTE_linear.eps',format='eps')
+    plt.savefig('fig_MAXI_XTE_linear.pdf',format='pdf')
 
     plt.show()
 
-plot1()
+#plot1()
 
 def plot_new():
     plot_style()

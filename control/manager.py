@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------
 model_file     = 'data/BSK21_1.40.dat'                         # file containing data of the model of NS
 model_param    =  1.40
-tite_file      = 'data/tite2.dat'                              # TiTe data file
+tite_file      = 'data/tite.dat'                               # TiTe data file
 npsf_file      = 'data/npsf.dat'                               # superfluidity data file
 effmass_file   = 'data/effmass.dat'                            # effective mass data file
 
@@ -21,13 +21,13 @@ regime         = 1                                             # if 1 - Implicit
                                                                # 0 - Implicit Euler scheme while t< 7.e2 years
                                                                # and after isothermal scheme is used.
 
-dM_accreted    = 1.e-15                                        # mass of accreted envelope in units of NS mass
+dM_accreted    = 1.e-6                                         # mass of accreted envelope in units of NS mass
 MagField       = 0.0e12                                        # Magnetic filed at pole in Gauss
 log_rho_b      = 9.0                                           # to determine the boundary for computing NS envelope log(rho_b) in g/cm3
 rho_star       = 10**8                                         # [0<=rho_star<=10**log_rho_b] if 0 then Fe envelope is used, if max then C, and mixture in between
-tite_model     = 2                                             # 0 for A. Y. Potekhin et al 1997 and 1 for M. V. Beznogov et al 2016 [C-Fe mixture]
+tite_model     = 0                                             # 0 for A. Y. Potekhin et al 1997 and 1 for M. V. Beznogov et al 2016 [C-Fe mixture]
 
-T_0            = 1.25e8      #XTE 1.25e8  MAXI 2                  # initial redshifted temperature of the star (T(r) = const at time t = 0) in K
+T_0            = 0.57e8 # KS 0.40e8 XTE 1.30470e8     #1e8 for general case     # initial redshifted temperature of the star (T(r) = const at time t = 0) in K
 # ----------------------------------------------------------------
 
 

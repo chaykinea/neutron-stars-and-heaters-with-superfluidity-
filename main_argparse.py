@@ -107,8 +107,14 @@ def main():
             PDEsolver.params(time=10000, source_name=file_name)
 
         for simulation_number in range(external_param[0],external_param[1]):
-
-            tite_1e9.init(rho_bound=log_rho_b, rho_star=rho_star_arr[simulation_number], comp=int(env_model[simulation_number]))
+            
+            if (tite_model):
+                print('new')
+                tite_1e9.init(rho_bound=log_rho_b, rho_star=rho_star_arr[simulation_number], comp=int(env_model[simulation_number]))
+            else:
+                print('old')
+                tite.tite_init()
+            
 
             print('Comp = ', int(env_model[simulation_number]), '\n')
             print('Comp = ', int(env_model[simulation_number]), '\n')

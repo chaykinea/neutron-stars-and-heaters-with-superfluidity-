@@ -526,8 +526,8 @@ def params(time,source_name):
 
     # ACCRETION
     turn_on_time_0 = 1e3
-    turn_on_time = turn_on_time_0 + 1.45
-    t_source_max = turn_on_time + 5
+    turn_on_time = turn_on_time_0 + 0.17 # 1 for general problem
+    t_source_max = turn_on_time + 30
     name = source_name
 
     t_source_points     = numpy.array([turn_on_time +0.01 ,turn_on_time + 0.1,turn_on_time + 1.,turn_on_time + 5., turn_on_time + 10.,
