@@ -103,7 +103,7 @@ def show_curves_1(Pow=4, dt=0, timeshift=4e4):
         plt.yticks(np.linspace(-4,3,8),fontsize=22)
         plt.ylim(-3.4, 3.1)
         plt.xlim(-1,21)
-        plt.ylabel('$\\rm log$ $L^{\infty}_{\\rm{s,h}}/L_{\\rm{c}}^{\infty}$', fontsize=26)
+        plt.ylabel('$\\rm log$ $L^{\infty}_{\\rm{s,h}}/L_{\\rm{h0}}^{\infty}$', fontsize=26)
         plt.xlabel('$t \\thinspace \\thinspace \\thinspace \\rm{yr}$', fontsize=26)
 
         plt.text(6,0.2,'$\\rm HEATER$',fontsize=22)
@@ -204,25 +204,25 @@ def show_curves_2(Pow=4, dt=0, timeshift=4e4):
         plt.xlim(-1,21)
         plt.setp(ax2.get_xticklabels(), visible=False)
         plt.setp(ax1.get_xticklabels(), visible=False)
-        plt.ylabel('$\\rm log $ $L^{\infty}_{\\rm{s}}/L_{\\rm{c}}^{\infty}$', fontsize=26, labelpad=18)
+        plt.ylabel('$\\rm log $ $L^{\infty}_{\\rm{s}}/L_{\\rm{h0}}^{\infty}$', fontsize=26, labelpad=18)
         plt.xlabel('$t \\thinspace \\thinspace \\thinspace \\rm{yr}$', fontsize=26)
 
         plt.subplot(3,1,1)
         plt.text(2,0.4,'$\\rm HEATER$',fontsize=22)
         #plt.text(13,2.4,'$\\rm H_{0} = 5\\times 10^{2} H_{c} $',fontsize=22)
         plt.text(13,2.4,'$\\rm \\rho_{1} = 10^{12} \\thinspace \\thinspace g \\thinspace cm^{-3}$',fontsize=22)
-        plt.ylabel('$\\rm log $ $L^{\infty}_{\\rm{h}}/L_{\\rm{c}}^{\infty}$', fontsize=26, labelpad=36)
+        plt.ylabel('$\\rm log $ $L^{\infty}_{\\rm{h}}/L_{\\rm{h0}}^{\infty}$', fontsize=26, labelpad=39)
         plt.subplot(3,1,2)
         plt.text(8,-0.55,'$\\rm SURFACE,$ $M = 1.40 \\thinspace \\rm M \odot$',fontsize=22)
-        plt.ylabel('$\\rm log $ $L^{\infty}_{\\rm{s}}/L_{\\rm{c}}^{\infty}$', fontsize=26)
+        plt.ylabel('$\\rm log $ $L^{\infty}_{\\rm{s}}/L_{\\rm{h0}}^{\infty}$', fontsize=26)
         plt.subplot(3,1,3)
         plt.text(8,-1.1,'$\\rm SURFACE,$ $M = 1.85 \\thinspace \\rm M \odot$',fontsize=22)
 
         plt.savefig('fig2.eps',format='eps')
         plt.show()
 
-#show_curves_1()
-#show_curves_2()
+show_curves_1()
+show_curves_2()
 
 def temperature_profile_profile(rho=2, Pow=4, dt=0):
 
@@ -260,7 +260,7 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
     if(rho==1):
         plt.ylabel('$\\rm log \\thinspace$$ \\widetilde{T} \\thinspace \\thinspace \\thinspace \\rm [K]$',fontsize=24)
     plt.setp(ax1.get_xticklabels(), visible=False)
-    plt.xlim(9,15)
+    plt.xlim(9,np.log10(1.5e14))
 
     plt.fill_between(Tcrit[:,0], np.ones(len(Tcrit[:,0])), np.log10(Tcrit[:,2]*1e9), facecolor=colors2[2], interpolate=True, alpha=1)
     plt.fill_between(Tcrit[:,0], np.ones(len(Tcrit[:,0])), np.log10(Tcrit[:,1]*1e9), facecolor=colors2[1], interpolate=True, alpha=1)
@@ -313,7 +313,7 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
         plt.text(13.03,8.75,'SCLBL',fontsize=14,rotation=83)
 
         plt.text(13.74,8.42,'GIPSF',fontsize=14,rotation=-90)
-        plt.text(14.18,8.47,'AWP2, SCLBL',fontsize=14,rotation=-89)
+        #plt.text(14.18,8.47,'AWP2, SCLBL',fontsize=14,rotation=-89)
         
     elif rho==2:
         plt.text(13.05, 8.55, '$T < T_{\\rm cr}$', fontsize=23)
@@ -325,7 +325,7 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
         plt.text(13.00,8.69,'SCLBL',fontsize=14,rotation=83)
 
         plt.text(13.74,8.42,'GIPSF',fontsize=14,rotation=-90)
-        plt.text(14.20,8.43,'AWP2, SCLBL',fontsize=14,rotation=-89)
+        #plt.text(14.20,8.43,'AWP2, SCLBL',fontsize=14,rotation=-89)
     idx = 0
 
     ax2 = plt.subplot(2,1,2)
@@ -348,7 +348,7 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
         plt.ylabel('$\\rm log \\thinspace$$ \\widetilde{T} \\thinspace \\thinspace \\thinspace \\rm [K]$',fontsize=24)
     plt.xlabel('$\\rm log \\thinspace$$\\rho \\thinspace \\thinspace \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=24)
     plt.xticks(np.array([9,10,11,12,13,14,15]),fontsize=20)
-    plt.xlim(9, 15)
+    plt.xlim(9, np.log10(1.5e14))
 
     plt.fill_between(Tcrit[:,0], np.ones(len(Tcrit[:,0])), np.log10(Tcrit[:,2]*1e9), facecolor=colors2[2], interpolate=True, alpha=1)
     plt.fill_between(Tcrit[:,0], np.ones(len(Tcrit[:,0])), np.log10(Tcrit[:,1]*1e9), facecolor=colors2[1], interpolate=True, alpha=1)
@@ -378,23 +378,23 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
 
     if rho==1:
         plt.text(13, 8.55, '$T < T_{\\rm cr}$', fontsize=23)
-        plt.text(9.7,8.35, '$t=15.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
+        plt.text(9.66,8.35, '$t=15.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
         plt.text(9.5,8.545, '$t=3.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
       
     else:
         plt.text(13, 8.45, '$T < T_{\\rm cr}$', fontsize=23)
         plt.text(9.5,8.4, '$t=3.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
-        plt.text(11.55,8.29, '$t=15.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
+        plt.text(11.37,8.29, '$t=15.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
     if rho==1:
         plt.savefig('profile_1.eps', format='eps')
-        plt.savefig('profile_1.jpeg', format='jpeg')
+        #plt.savefig('profile_1.jpeg', format='jpeg')
     else:
         plt.savefig('profile_2.eps', format='eps')
-        plt.savefig('profile_2.jpeg', format='jpeg')
+        #plt.savefig('profile_2.jpeg', format='jpeg')
     plt.show()
 
-temperature_profile_profile(rho=2)
-temperature_profile_profile(rho=1)
+#temperature_profile_profile(rho=2)
+#temperature_profile_profile(rho=1)
 
 
 def timedelay(Pow=5, dt=0):

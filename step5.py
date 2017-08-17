@@ -75,17 +75,17 @@ def plot_style(xticks=5,yticks=5):
     plt.rcParams['lines.scale_dashes'] = False
     plt.rcParams['errorbar.capsize'] = 6
 
-def shift(Pow=5, change=0):
+def shift():
 
     rho_values = np.array([3.16227766e+10, 1e11, 3.16227766e+11, 1e12, 3.16227766e+12, 1e13])
     rho_sample = np.linspace(10.5,13, 200)
     rho_change = np.array([0,1,-1,2,-2,3])
-    y_sample = np.zeros((3,200,3))
+    y_sample = np.zeros((3,200,2))
     Pow_idx = 0
 
     plot_style()
 
-    for Pow in [3,5,4]:
+    for Pow in [5,4]:
 
         array_hm = np.zeros((3, 6))
 
@@ -102,7 +102,6 @@ def shift(Pow=5, change=0):
                     max_arg = 4000 + np.argmax(data[4000:, -2])
                     print('output_hm/cooling_' + names[i] + '_' + str(num) + '.dat')
                     array_hm[int(i-1), rho] += data[max_arg, -2]/ref
-                    #plt.scatter(np.log10(rho_values[rho]), data[max_arg, -2]/ref, marker=shape[0], s=170,facecolor=colors[i], edgecolor='black',linewidth=2.8, zorder=3)
 
             else:
                 num = 8*Pow + 2*rho_change[rho]
@@ -115,7 +114,6 @@ def shift(Pow=5, change=0):
                     max_arg = 4000 + np.argmax(data[4000:, -2])
                     print('output_hm/cooling_' + names[i] + '_' + str(num) + '.dat')
                     array_hm[int(i-1), rho] += data[max_arg, -2]/ref
-                    #plt.scatter(np.log10(rho_values[rho]), data[max_arg, -2]/ref, marker=shape[0], s=170,facecolor=colors[i], edgecolor='black',linewidth=2.8, zorder=3)
 
         for i in range(0, 3):
             hm = interpolate.interp1d(np.log10(rho_values),array_hm[i,:], kind='cubic')
@@ -139,27 +137,24 @@ def shift(Pow=5, change=0):
     zorder = np.array([3,2,2,2])
     for i in range(0,3):
         idx = i+1
-        #plt.fill_between(rho_sample, y_sample[i,:,0], y_sample[i,:,1], facecolor=colors[i+1], interpolate=True, alpha=0.5)
-        plt.plot(rho_sample, y_sample[i,:,2], color=colors[idx],
-                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]))
-        #plt.plot(rho_sample, y_sample[i,:,0],lw=3,color=colors[i+1],zorder=zorder[i+1])
+
         plt.plot(rho_sample, y_sample[i,:,1], color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]))
+        plt.plot(rho_sample, y_sample[i,:,0], color=colors[idx],
                      linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]))
 
     plt.yticks([1,1.5,2,2.5,3,3.5,4],fontsize=20)
     plt.ylim(0.9,4)
 
     plt.xlabel('$\\rm log \\thinspace$$\\rho_{1}   \\thinspace \\thinspace \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=24)
-    plt.ylabel('$L^{\infty, \\rm sf}_{\\rm max}/L^{\infty}_{\\rm max}$',fontsize=24)
     plt.text(11.05,3.1,'$ M = 1.85 \\thinspace \\rm M \odot $', fontsize=23)
 
-    plt.text(11.96, 3.7, '$ L_{\\rm h0} = 10^{3} L_{\\rm hc}$', fontsize=21,color=colors[2])
-    plt.text(12.3, 3.13, '$ L_{\\rm h0} = 5 \\times 10^{2} L_{\\rm hc}$', fontsize=21,color=colors[2])
-    plt.text(12.24, 2.6, '$ L_{\\rm h0} = 10^{3} L_{\\rm hc}$', fontsize=21,color=colors[1])
-    plt.text(12.28, 1.87, '$ L_{\\rm h0} = 5 \\times 10^{2} L_{\\rm hc}$', fontsize=21,color=colors[1])
-    plt.text(12.45, 1.38, '$ L_{\\rm h0} = 10^{3} L_{\\rm hc}$', fontsize=21,color=colors[3])
-    plt.text(12.36, 0.96, '$ L_{\\rm h0} = 5 \\times 10^{2} L_{\\rm hc}$', fontsize=20,color=colors[3])
-    #plt.text(11.75, 2.0, '$ H_{\\rm 0} = 2 \\times 10^{2} L_{\\rm hc}$', fontsize=21)
+    plt.text(12.185, 3.7, '$ \\alpha_{\\rm h} = 10^{3}$', fontsize=21,color=colors[2])
+    plt.text(12.24, 3.12, '$ 5 \\times 10^{2} $', fontsize=21,color=colors[2])
+    plt.text(12.53, 2.49, '$ 10^{3} $', fontsize=21,color=colors[1])
+    plt.text(12.47, 2, '$ 5 \\times 10^{2} $', fontsize=21,color=colors[1])
+    plt.text(12.8, 1.33, '$ 10^{3} $', fontsize=21,color=colors[3])
+    plt.text(12.72, 1.07, '$ 5 \\times 10^{2} $', fontsize=21,color=colors[3])
 
     plt.legend(loc='upper left', fontsize=20,frameon=False)
     plt.savefig('ratios_density_m1.eps', format='eps')
@@ -167,17 +162,17 @@ def shift(Pow=5, change=0):
 
 shift()
 
-def shift2(Pow=5, change=0):
+def shift2():
 
     rho_values = np.array([3.16227766e+10, 1e11, 3.16227766e+11, 1e12, 3.16227766e+12, 1e13])
     rho_sample = np.linspace(10.5,13, 200)
     rho_change = np.array([0,1,-1,2,-2,3])
-    y_sample = np.zeros((3,200,3))
+    y_sample = np.zeros((3,200,2))
     Pow_idx = 0
 
     plot_style()
 
-    for Pow in [3,5,4]:
+    for Pow in [5,4]:
 
         array_hm = np.zeros((3, 6))
 
@@ -194,7 +189,6 @@ def shift2(Pow=5, change=0):
                     max_arg = 4000 + np.argmax(data[4000:, -2])
                     print('output_lm/cooling_' + names[i] + '_' + str(num) + '.dat')
                     array_hm[int(i-1), rho] += data[max_arg, -2]/ref
-                    #plt.scatter(np.log10(rho_values[rho]), data[max_arg, -2]/ref, marker=shape[0], s=170,facecolor=colors[i], edgecolor='black',linewidth=2.8, zorder=3)
 
             else:
                 num = 8*Pow + 2*rho_change[rho]
@@ -207,7 +201,6 @@ def shift2(Pow=5, change=0):
                     max_arg = 4000 + np.argmax(data[4000:, -2])
                     print('output_lm/cooling_' + names[i] + '_' + str(num) + '.dat')
                     array_hm[int(i-1), rho] += data[max_arg, -2]/ref
-                    #plt.scatter(np.log10(rho_values[rho]), data[max_arg, -2]/ref, marker=shape[0], s=170,facecolor=colors[i], edgecolor='black',linewidth=2.8, zorder=3)
 
         for i in range(0, 3):
             hm = interpolate.interp1d(np.log10(rho_values),array_hm[i,:], kind='cubic')
@@ -222,33 +215,30 @@ def shift2(Pow=5, change=0):
     zorder = np.array([3,2,2,2])
     for i in range(0,3):
         idx = i+1
-        #plt.fill_between(rho_sample, y_sample[i,:,0], y_sample[i,:,1], facecolor=colors[i+1], interpolate=True, alpha=0.5)
-        plt.plot(rho_sample, y_sample[i,:,2], color=colors[idx],
-                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]))
-        #plt.plot(rho_sample, y_sample[i,:,0],lw=3,color=colors[i+1],zorder=zorder[i+1])
+
         plt.plot(rho_sample, y_sample[i,:,1], color=colors[idx],
+                     linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]))
+        plt.plot(rho_sample, y_sample[i,:,0], color=colors[idx],
                      linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]))
 
     plt.yticks([1,1.5,2,2.5,3,3.5,4],fontsize=20)
-    plt.ylim(0.9,2.5)
+    plt.ylim(0.9,2.52)
 
     plt.xlabel('$\\rm log \\thinspace$$\\rho_{1}   \\thinspace \\thinspace \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=24)
-    #plt.ylabel('$L^{\infty,\\rm sf}_{\\rm max}/L^{\infty}_{\\rm max}$',fontsize=24)
+    plt.ylabel('$\\alpha_{\\rm s}$',fontsize=28)
     plt.text(11.1,2.37,'$ M = 1.40 \\thinspace \\rm M \odot$', fontsize=23)
 
-    #plt.text(11.65, 1.55, '$ H_{\\rm 0} = 2 \\times 10^{2} H_{\\rm c}$', fontsize=21)
-    plt.text(11.702, 1.98, '$ L_{\\rm h0} = 5 \\times 10^{2} L_{\\rm hc}$', fontsize=21, color=colors[2])
-    plt.text(11.85,2.41, '$ L_{\\rm h0} = 10^{3} L_{\\rm hc}$', fontsize=21,color=colors[2])
-    plt.text(11.74, 1.66, '$ L_{\\rm h0} =  10^{3} L_{\\rm hc}$', fontsize=21, color=colors[1])
-    plt.text(11.93,1.34, '$ L_{\\rm h0} = 5 \\times 10^{2} L_{\\rm hc}$', fontsize=21,color=colors[1])
-    plt.text(12.45, 1.13, '$ L_{\\rm h0} = 10^{3} L_{\\rm hc}$', fontsize=21,color=colors[3])
-    plt.text(12.4, 0.96, '$ L_{\\rm h0} = 5 \\times 10^{2} L_{\\rm hc}$', fontsize=20,color=colors[3])
+    plt.text(11.94,2.40, '$ \\alpha_{\\rm h} = 10^{3}$', fontsize=21,color=colors[2])
+    plt.text(11.97, 1.98, '$  5 \\times 10^{2} $', fontsize=21, color=colors[2])
+    plt.text(12.15, 1.65, '$ 10^{3} $', fontsize=21, color=colors[1])
+    plt.text(12.05,1.37, '$ 5 \\times 10^{2} $', fontsize=21,color=colors[1])
+    plt.text(12.83, 1.11, '$ 10^{3}$', fontsize=21,color=colors[3])
+    plt.text(12.7, 0.985, '$ 5 \\times 10^{2} $', fontsize=20,color=colors[3])
 
-    #plt.legend(loc='upper left', fontsize=20)
     plt.savefig('ratios_density_m2.eps', format='eps')
     plt.show()
 
-shift2(Pow=4,change=1)
+#shift2()
 
 def _Tcs(nn):
 
@@ -316,6 +306,8 @@ def T_crit():
 
     plt.xlabel('$\\rm log \\thinspace$$\\rho \\thinspace \\thinspace \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=24)
     plt.ylabel('$T_{\\rm c}$  $/(\\rm 10^{9} \\thinspace K)$',fontsize=22)
+    plt.fill_between([np.log10(1.5e14),15],[0,0],[16,16],color='lightgrey')
+    plt.text(14.20,7.5,'Core',fontsize=30,rotation=-90)
     plt.axvline(np.log10(1.5e14),dashes=(32,6),lw=2,color='black')
     #plt.axvline(np.log10(4.e11),lw=2,color='black')
     plt.yticks([0,2,4,6,8,10,12,14],fontsize=22)
@@ -410,7 +402,7 @@ def heat_cap():
     
     plt.savefig('heatcap.eps', format='eps')
 
-heat_cap()
+#heat_cap()
 
 
 

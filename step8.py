@@ -196,7 +196,7 @@ def plot1():
     #plt.ylim(160,280)
     #plt.text(550,237,'$\dot{M} = 4\\times10^{-8} \\thinspace \\rm M \\odot / yr$',fontsize=22)
     #plt.text(550,230,'$T_{\\rm core}^{\infty} = 2 \\times 10^{8} \\thinspace \\rm K$',fontsize=22)
-    
+
     plt.text(1.50,155,'$\dot{M} = 10^{-8} \\thinspace \\rm M \\odot / yr$',fontsize=22)
     plt.text(1.50,151,'$\widetilde{T}_{0} = 10^{8} \\thinspace \\rm K$',fontsize=22)
     
@@ -213,7 +213,7 @@ def plot1():
 
     plt.show()
 
-plot1()
+#plot1()
 
 
 def tite_plot():
@@ -246,12 +246,13 @@ def plot2():
     k_b = 8.617330350e-5
     config = np.loadtxt('data/config.dat')
     data1 = np.loadtxt('output/cooling_GIPSF_' + str(0+35) + '.dat')
-    outdata = np.zeros([len(data1[::5,0]),7])
+    outdata = np.zeros([len(data1[::5,0]),9])
     outdata[:,0] = (data1[::5, 1]-1.000170e3)*365
 
-    for idx,lb in zip([3,2,1],['$\\rho_{\\rm acc} = 10^{13} \\rm \\thinspace \\thinspace g \\thinspace cm^{-3}$',
+    for idx,lb in zip([3,2,1,0],['$\\rho_{\\rm acc} = 10^{13} \\rm \\thinspace \\thinspace g \\thinspace cm^{-3}$',
     '$\\rho_{\\rm acc} = 10^{12.5} \\rm \\thinspace \\thinspace g \\thinspace cm^{-3}$',
-    '$\\rho_{\\rm acc} = 10^{12.0} \\rm \\thinspace \\thinspace g \\thinspace cm^{-3}$']):
+    '$\\rho_{\\rm acc} = 10^{12.0} \\rm \\thinspace \\thinspace g \\thinspace cm^{-3}$',
+    '$\\rho_{\\rm acc} = 10^{11.5} \\rm \\thinspace \\thinspace g \\thinspace cm^{-3}$']):
  
         data1 = np.loadtxt('output/cooling_GIPSF_' + str(idx+35) + '.dat')
         data2 = np.loadtxt('output/cooling_SF0_' + str(idx+35) + '.dat')
@@ -260,13 +261,13 @@ def plot2():
              linewidth=line_thickness2[idx],zorder=order2[idx],label=lb)
         plt.plot((data2[:, 1]-1.000170e3)*365, data2[:, 0]*k_b, '--',color=colors2[idx],
              linewidth=line_thickness2[idx],zorder=order2[idx])
-        outdata[:,idx*2-1] = data1[::5, 0]*k_b
-        outdata[:,idx*2] = data2[::5, 0]*k_b
+        outdata[:,idx*2+1] = data1[::5, 0]*k_b
+        outdata[:,idx*2+2] = data2[::5, 0]*k_b
 
     plt.plot([10,10],[20,20],color='black',lw=2,label='GIPSF model')
     plt.plot([10,10],[20,20],'--',color='black',lw=2,label='No SF')
     np.savetxt('IGR.dat',outdata,fmt='%1.5e')
-    
+
     plt.scatter(t_IGR, T_IGR, s=100, color='black', marker='^',label='IGR J17480--2446', zorder=6)
     plt.errorbar(x=t_IGR, y=T_IGR, yerr=err_IGR, color='black', fmt=' ',zorder=6)
 
@@ -285,7 +286,7 @@ def plot2():
     plt.legend(loc='upper right',fontsize=19,scatterpoints=1,frameon=False)
     fixlogax(plt.gca(), a='x')
     plt.xlim(1,10000)
-    plt.savefig('IGR.pdf',format='pdf')
+    #plt.savefig('IGR.pdf',format='pdf')
     plt.show()
 
 plot2()
