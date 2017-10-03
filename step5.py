@@ -131,7 +131,7 @@ def shift():
     plt.plot([-10,-20], [-10,-20], color=colors[idx],
                      linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),label=labels[idx])
 
-    plt.xticks([10.5,11,11.5,12,12.5,13],fontsize=20)
+    plt.xticks([10.5,11,11.5,12,12.5,13],fontsize=29)
     plt.xlim(11.0,13)
 
     zorder = np.array([3,2,2,2])
@@ -143,20 +143,20 @@ def shift():
         plt.plot(rho_sample, y_sample[i,:,0], color=colors[idx],
                      linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]))
 
-    plt.yticks([1,1.5,2,2.5,3,3.5,4],fontsize=20)
+    plt.yticks([1,1.5,2,2.5,3,3.5,4],fontsize=29)
     plt.ylim(0.9,4)
 
-    plt.xlabel('$\\rm log \\thinspace$$\\rho_{1}   \\thinspace \\thinspace \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=24)
-    plt.text(11.05,3.1,'$ M = 1.85 \\thinspace \\rm M \odot $', fontsize=23)
+    plt.xlabel('$\\rm log \\thinspace$$\\rho_{1}   \\thinspace \\thinspace \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=29)
+    plt.text(11.05,3.1,'$ M = 1.85 \\thinspace \\rm M \odot $', fontsize=24)
 
-    plt.text(12.185, 3.7, '$ \\alpha_{\\rm h} = 10^{3}$', fontsize=21,color=colors[2])
-    plt.text(12.24, 3.12, '$ 5 \\times 10^{2} $', fontsize=21,color=colors[2])
-    plt.text(12.53, 2.49, '$ 10^{3} $', fontsize=21,color=colors[1])
-    plt.text(12.47, 2, '$ 5 \\times 10^{2} $', fontsize=21,color=colors[1])
-    plt.text(12.8, 1.33, '$ 10^{3} $', fontsize=21,color=colors[3])
-    plt.text(12.72, 1.07, '$ 5 \\times 10^{2} $', fontsize=21,color=colors[3])
+    plt.text(12.175, 3.72, '$ \\alpha_{\\rm h} = 10^{3}$', fontsize=26,color=colors[2])
+    plt.text(12.24, 3.12, '$ 5 \\times 10^{2} $', fontsize=26,color=colors[2])
+    plt.text(12.53, 2.49, '$ 10^{3} $', fontsize=26,color=colors[1])
+    plt.text(12.47, 1.95, '$ 5 \\times 10^{2} $', fontsize=26,color=colors[1])
+    plt.text(12.77, 1.33, '$ 10^{3} $', fontsize=26,color=colors[3])
+    plt.text(12.65, 1.02, '$ 5 \\times 10^{2} $', fontsize=26,color=colors[3])
 
-    plt.legend(loc='upper left', fontsize=20,frameon=False)
+    plt.legend(loc='upper left', fontsize=22,frameon=False)
     plt.savefig('ratios_density_m1.eps', format='eps')
     plt.show()
 
@@ -209,7 +209,7 @@ def shift2():
         Pow_idx += 1
 
 
-    plt.xticks([10.5,11,11.5,12,12.5,13],fontsize=20)
+    plt.xticks([10.5,11,11.5,12,12.5,13],fontsize=29)
     plt.xlim(11.0,13)
 
     zorder = np.array([3,2,2,2])
@@ -221,24 +221,24 @@ def shift2():
         plt.plot(rho_sample, y_sample[i,:,0], color=colors[idx],
                      linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]))
 
-    plt.yticks([1,1.5,2,2.5,3,3.5,4],fontsize=20)
+    plt.yticks([1,1.5,2,2.5,3,3.5,4],fontsize=29)
     plt.ylim(0.9,2.52)
 
-    plt.xlabel('$\\rm log \\thinspace$$\\rho_{1}   \\thinspace \\thinspace \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=24)
-    plt.ylabel('$\\alpha_{\\rm s}$',fontsize=28)
-    plt.text(11.1,2.37,'$ M = 1.40 \\thinspace \\rm M \odot$', fontsize=23)
+    plt.xlabel('$\\rm log \\thinspace$$\\rho_{1}   \\thinspace \\thinspace \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=29)
+    plt.ylabel('$\\alpha_{\\rm s}$',fontsize=35)
+    plt.text(11.05,2.4,'$ M = 1.40 \\thinspace \\rm M \odot$', fontsize=24)
 
-    plt.text(11.94,2.40, '$ \\alpha_{\\rm h} = 10^{3}$', fontsize=21,color=colors[2])
-    plt.text(11.97, 1.98, '$  5 \\times 10^{2} $', fontsize=21, color=colors[2])
-    plt.text(12.15, 1.65, '$ 10^{3} $', fontsize=21, color=colors[1])
-    plt.text(12.05,1.37, '$ 5 \\times 10^{2} $', fontsize=21,color=colors[1])
-    plt.text(12.83, 1.11, '$ 10^{3}$', fontsize=21,color=colors[3])
-    plt.text(12.7, 0.985, '$ 5 \\times 10^{2} $', fontsize=20,color=colors[3])
+    plt.text(11.94,2.40, '$ \\alpha_{\\rm h} = 10^{3}$', fontsize=26,color=colors[2])
+    plt.text(11.97, 1.98, '$  5 \\times 10^{2} $', fontsize=26, color=colors[2])
+    plt.text(12.15, 1.65, '$ 10^{3} $', fontsize=26, color=colors[1])
+    plt.text(12.05,1.35, '$ 5 \\times 10^{2} $', fontsize=26,color=colors[1])
+    plt.text(12.83, 1.11, '$ 10^{3}$', fontsize=26,color=colors[3])
+    plt.text(12.62, 0.96, '$ 5 \\times 10^{2} $', fontsize=26,color=colors[3])
 
     plt.savefig('ratios_density_m2.eps', format='eps')
     plt.show()
 
-#shift2()
+shift2()
 
 def _Tcs(nn):
 
@@ -298,20 +298,20 @@ def T_crit():
             Tc_ns[i] = _Tcs(nn[i])*np.exp(Phi[i])
 
         output[:, idx] = Tc_ns
-        plt.plot(log_rho,Tc_ns,color=colors[idx],
+        plt.plot(log_rho[np.where(log_rho<=np.log10(1.5e14))],Tc_ns[np.where(log_rho<=np.log10(1.5e14))],color=colors[idx],
                      linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),label=labels[idx],zorder=order[idx])
 
 
-    plt.legend(loc='upper left',fontsize=23,frameon=False)
+    plt.legend(loc='upper left',fontsize=26,frameon=False)
 
-    plt.xlabel('$\\rm log \\thinspace$$\\rho \\thinspace \\thinspace \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=24)
-    plt.ylabel('$T_{\\rm c}$  $/(\\rm 10^{9} \\thinspace K)$',fontsize=22)
+    plt.xlabel('$\\rm log \\thinspace$$\\rho \\thinspace \\thinspace \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=29)
+    plt.ylabel('$T_{\\rm c}$  $/(\\rm 10^{9} \\thinspace K)$',fontsize=29)
     plt.fill_between([np.log10(1.5e14),15],[0,0],[16,16],color='lightgrey')
-    plt.text(14.20,7.5,'Core',fontsize=30,rotation=-90)
+    plt.text(14.20,7.5,'Core',fontsize=33,rotation=-90)
     plt.axvline(np.log10(1.5e14),dashes=(32,6),lw=2,color='black')
     #plt.axvline(np.log10(4.e11),lw=2,color='black')
-    plt.yticks([0,2,4,6,8,10,12,14],fontsize=22)
-    plt.xticks([10,11,12,13,14,15],fontsize=22)
+    plt.yticks([0,2,4,6,8,10,12,14],fontsize=29)
+    plt.xticks([10,11,12,13,14,15],fontsize=29)
     plt.xlim(10.9,14.5)
     plt.ylim(0,14)
 
@@ -319,7 +319,7 @@ def T_crit():
     #plt.show()
     plt.savefig('Tcrit_ns.eps',format='eps')
 
-T_crit()
+#T_crit()
 
 def heat_cap():
 
@@ -385,20 +385,20 @@ def heat_cap():
     idx += 1
     plt.plot([-10,-20], [-10,-20], color=colors[idx],
                      linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),label=labels[idx])
-    plt.plot([-10,-20], [-10,-20], lw=2.5, color='black',dashes=[3,3], label='$\\rm C_{e} + C_{ion}$')
+    plt.plot([-10,-20], [-10,-20], lw=2.5, color='black',dashes=[3,5], label='\\Huge $\\rm C_{e} + C_{ion}$')
 
-    plt.yticks(np.array([15,16,17,18,19,20,21]),fontsize=20)
-    plt.xticks(np.array([10,11,12,13,14,15]),fontsize=20)
-    plt.xlim(10,15)
+    plt.yticks(np.array([15,16,17,18,19,20,21]),fontsize=29)
+    plt.xticks(np.array([10,11,12,13,14,15]),fontsize=29)
+    plt.xlim(10,np.log10(1.5e14))
     plt.ylim(14.9,21)
-    plt.legend(loc='upper left',fontsize=19, frameon=False)
+    plt.legend(loc='upper left',fontsize=23, frameon=False)
 
-    plt.text(10.3,15.6,'$T = 10^{7} \\thinspace \\rm K$',fontsize=21)
+    plt.text(10.3,15.6,'$T = 10^{7} \\thinspace \\rm K$',fontsize=25)
     #plt.text(10.6,16.6,'$T = 10^{8} \\thinspace \\rm K$',fontsize=21)
-    plt.text(10.5,18,'$T = 10^{9} \\thinspace \\rm K$',fontsize=21)
+    plt.text(10.5,18,'$T = 10^{9} \\thinspace \\rm K$',fontsize=25)
 
-    plt.xlabel('$\\rm log \\thinspace$$\\rho   \\thinspace \\thinspace \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=24)
-    plt.ylabel('$\\rm log \\thinspace$$ C_{V}   \\thinspace \\thinspace \\thinspace \\thinspace \\rm [erg \\thinspace K^{-1} cm^{-3}]$',fontsize=24)
+    plt.xlabel('$\\rm log \\thinspace$$\\rho   \\thinspace \\thinspace \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=29)
+    plt.ylabel('$\\rm log \\thinspace$$ C \\thinspace \\thinspace \\thinspace \\thinspace \\rm [erg \\thinspace K^{-1} cm^{-3}]$',fontsize=29)
     
     plt.savefig('heatcap.eps', format='eps')
 

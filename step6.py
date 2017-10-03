@@ -99,16 +99,16 @@ def show_curves_1(Pow=4, dt=0, timeshift=4e4):
 
         plt.legend(loc='upper right', fontsize=21, frameon=False)
 
-        plt.xticks(np.linspace(0,35,8),fontsize=22)
-        plt.yticks(np.linspace(-4,3,8),fontsize=22)
+        plt.xticks(np.linspace(0,35,8),fontsize=29)
+        plt.yticks(np.linspace(-4,3,8),fontsize=29)
         plt.ylim(-3.4, 3.1)
         plt.xlim(-1,21)
-        plt.ylabel('$\\rm log$ $L^{\infty}_{\\rm{s,h}}/L_{\\rm{h0}}^{\infty}$', fontsize=26)
-        plt.xlabel('$t \\thinspace \\thinspace \\thinspace \\rm{yr}$', fontsize=26)
+        plt.ylabel('$\\rm log$ $L^{\infty}_{\\rm{s,h}}/L_{\\rm{h0}}^{\infty}$', fontsize=29)
+        plt.xlabel('$t, \\thinspace \\thinspace \\rm{yr}$', fontsize=29)
 
         plt.text(6,0.2,'$\\rm HEATER$',fontsize=22)
         #plt.text(6,1.5,'$\\rm H_{0} = 5\\times 10^{2} H_{c} $',fontsize=22)
-        plt.text(6.5,2.6,'$\\rm \\rho_{1} = 10^{11} \\thinspace \\thinspace g \\thinspace cm^{-3}$',fontsize=22)
+        plt.text(5.8,2.5,'$\\rm \\rho_{1} = 10^{11} \\thinspace \\thinspace g \\thinspace cm^{-3}$',fontsize=26)
         plt.text(8,-1.3,'$\\rm SURFACE,$ $M = 1.40 \\thinspace \\rm M \odot$',fontsize=22)
         plt.text(5,-2.8,'$\\rm SURFACE,$ $M = 1.85 \\thinspace \\rm M \odot$',fontsize=22)
 
@@ -127,6 +127,7 @@ def show_curves_2(Pow=4, dt=0, timeshift=4e4):
     for rho in range(2,3):
         num = dt + 8*Pow + 2*rho
         for i in range(0,4):
+
             idx = i
             data = np.loadtxt('output_lm/cooling_' + names[i] + '_' + str(num) + '.dat')
             data2 = np.loadtxt('output_hm/cooling_' + names[i] + '_' + str(num) + '.dat')
@@ -138,13 +139,15 @@ def show_curves_2(Pow=4, dt=0, timeshift=4e4):
             power_ref2 = data2[4000,3]
 
             ax2 = plt.subplot(3,1,2)
+
             x_minor_locator = AutoMinorLocator(5)
             y_minor_locator = AutoMinorLocator(5)
             plt.tick_params(which='both', width=1.7)
             plt.tick_params(which='major', length=9)
             plt.tick_params(which='minor', length=5)
+
             plt.xlim(-1,21)
-            plt.yticks(np.linspace(-1,-0.5,2),fontsize=22)
+            plt.yticks(np.linspace(-1,-0.5,2),fontsize=29)
             plt.ylim(-1.1,-0.4)
             ax2.xaxis.set_minor_locator(x_minor_locator)
             ax2.yaxis.set_minor_locator(y_minor_locator)
@@ -161,9 +164,11 @@ def show_curves_2(Pow=4, dt=0, timeshift=4e4):
             plt.tick_params(which='both', width=1.7)
             plt.tick_params(which='major', length=9)
             plt.tick_params(which='minor', length=5)
+
             plt.xlim(-1,21)
-            plt.yticks(np.linspace(-3.,-1,3),fontsize=22)
+            plt.yticks(np.linspace(-3.,-1,3),fontsize=29)
             plt.ylim(-3.3,-0.5)
+
             ax3.xaxis.set_minor_locator(x_minor_locator)
             ax3.yaxis.set_minor_locator(y_minor_locator)
             ax3.tick_params(axis='both', which='major', pad=8)
@@ -176,52 +181,52 @@ def show_curves_2(Pow=4, dt=0, timeshift=4e4):
             if i==0:
 
                 ax1 = plt.subplot(3,1,1)
+
                 x_minor_locator = AutoMinorLocator(5)
                 y_minor_locator = AutoMinorLocator(5)
                 plt.tick_params(which='both', width=1.7)
                 plt.tick_params(which='major', length=9)
                 plt.tick_params(which='minor', length=5)
-                plt.yticks(np.linspace(0,3,4),fontsize=22)
+                plt.yticks(np.linspace(0,3,4),fontsize=29)
                 plt.ylim(-0.1,3.1)
                 plt.xlim(-1,21)
+
                 ax1.xaxis.set_minor_locator(x_minor_locator)
                 ax1.yaxis.set_minor_locator(y_minor_locator)
                 ax1.tick_params(axis='both', which='major', pad=8)
                 ax1.tick_params(axis='both', which='both', pad=8, left='on', right='on',top='on',bottom='on')
                 max_arg = 4000 + np.argmax(data[4000:, 3])
+
                 plt.plot(data[:,1]-timeshift, np.log10(data[:,3]/power_ref), color=colors[i], lw=3.5)
                 plt.scatter(data[max_arg,1]-timeshift, np.log10(data[max_arg, 3]/power_ref), marker=shape[2], s=170,
                         facecolor=colors[i], edgecolor='grey',linewidth=1.5, zorder=zorders2[i])
 
-                #plt.plot([-10,-20], [-10,-20],'-', lw=3, color=colors[0], label=labels[0])
-                #plt.plot([-10,-20], [-10,-20], '-', lw=3, color=colors[1], label=labels[1])
-                #plt.plot([-10,-20], [-10,-20], '-', lw=3, color=colors[2], label=labels[2])
-                #plt.plot([-10,-20], [-10,-20], '-', lw=3, color=colors[3], label=labels[3])
-
-        plt.legend(loc='upper right', fontsize=20, frameon=False)
-
-        plt.xticks(np.linspace(-0,35,8),fontsize=22)
+        plt.xticks(np.linspace(-0,35,8),fontsize=29)
         plt.xlim(-1,21)
+
         plt.setp(ax2.get_xticklabels(), visible=False)
         plt.setp(ax1.get_xticklabels(), visible=False)
-        plt.ylabel('$\\rm log $ $L^{\infty}_{\\rm{s}}/L_{\\rm{h0}}^{\infty}$', fontsize=26, labelpad=18)
-        plt.xlabel('$t \\thinspace \\thinspace \\thinspace \\rm{yr}$', fontsize=26)
+
+        plt.ylabel('$\\rm log $ $L^{\infty}_{\\rm{s}}/L_{\\rm{h0}}^{\infty}$', fontsize=29, labelpad=24)
+        plt.xlabel('$t, \\thinspace \\thinspace \\rm{yr}$', fontsize=29)
 
         plt.subplot(3,1,1)
+
         plt.text(2,0.4,'$\\rm HEATER$',fontsize=22)
-        #plt.text(13,2.4,'$\\rm H_{0} = 5\\times 10^{2} H_{c} $',fontsize=22)
-        plt.text(13,2.4,'$\\rm \\rho_{1} = 10^{12} \\thinspace \\thinspace g \\thinspace cm^{-3}$',fontsize=22)
-        plt.ylabel('$\\rm log $ $L^{\infty}_{\\rm{h}}/L_{\\rm{h0}}^{\infty}$', fontsize=26, labelpad=39)
+        plt.text(12,2.16,'$\\rm \\rho_{1} = 10^{12} \\thinspace \\thinspace g \\thinspace cm^{-3}$',fontsize=26)
+        plt.ylabel('$\\rm log $ $L^{\infty}_{\\rm{h}}/L_{\\rm{h0}}^{\infty}$', fontsize=29, labelpad=49)
+
         plt.subplot(3,1,2)
         plt.text(8,-0.55,'$\\rm SURFACE,$ $M = 1.40 \\thinspace \\rm M \odot$',fontsize=22)
-        plt.ylabel('$\\rm log $ $L^{\infty}_{\\rm{s}}/L_{\\rm{h0}}^{\infty}$', fontsize=26)
+        plt.ylabel('$\\rm log $ $L^{\infty}_{\\rm{s}}/L_{\\rm{h0}}^{\infty}$', fontsize=29)
+
         plt.subplot(3,1,3)
         plt.text(8,-1.1,'$\\rm SURFACE,$ $M = 1.85 \\thinspace \\rm M \odot$',fontsize=22)
 
         plt.savefig('fig2.eps',format='eps')
         plt.show()
 
-show_curves_1()
+#show_curves_1()
 show_curves_2()
 
 def temperature_profile_profile(rho=2, Pow=4, dt=0):
@@ -254,11 +259,11 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
     ax1.yaxis.set_minor_locator(y_minor_locator)
     ax1.tick_params(axis='both', which='both', pad=8, left='on', right='on',top='on',bottom='on')
 
-    plt.yticks(np.array([8,8.2,8.4,8.6,8.8,9]),fontsize=20)
-    plt.xticks(np.array([9,10,11,12,13,14,15]),fontsize=20)
+    plt.yticks(np.array([8,8.2,8.4,8.6,8.8,9]),fontsize=29)
+    plt.xticks(np.array([9,10,11,12,13,14,15]),fontsize=29)
 
     if(rho==1):
-        plt.ylabel('$\\rm log \\thinspace$$ \\widetilde{T} \\thinspace \\thinspace \\thinspace \\rm [K]$',fontsize=24)
+        plt.ylabel('$\\rm log \\thinspace$$ \\widetilde{T} \\thinspace \\thinspace \\thinspace \\rm [K]$',fontsize=29)
     plt.setp(ax1.get_xticklabels(), visible=False)
     plt.xlim(9,np.log10(1.5e14))
 
@@ -272,7 +277,7 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
 
     if rho==2:
         plt.ylim(8.17,8.73)
-        plt.text(9.2,8.32,'$\\rho_{1} = 10^{12} \\thinspace \\thinspace \\rm g \\thinspace cm^{-3}$', fontsize=23)
+        plt.text(9.1,8.32,'$\\rho_{1} = 10^{12} \\thinspace \\thinspace \\rm g \\thinspace cm^{-3}$', fontsize=24)
         idx = 0
         plt.plot([-10,-20], [-10,-20], color=colors[idx],
                      linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),label=labels[idx])
@@ -288,8 +293,8 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
         plt.legend(loc='upper left',fontsize=21, frameon=False)
     else:
         plt.ylim(8.17,8.83)
-        plt.text(9.1,8.74,'$\\rho_{1} = 10^{11} \\thinspace \\thinspace \\rm g \\thinspace cm^{-3}$', fontsize=21)
-        plt.text(9.1,8.67,'$M = 1.40 \\thinspace \\rm M \\odot$',fontsize=21)
+        plt.text(9.1,8.71,'$\\rho_{1} = 10^{11} \\thinspace \\thinspace \\rm g \\thinspace cm^{-3}$', fontsize=24)
+        plt.text(9.1,8.63,'$M = 1.40 \\thinspace \\rm M \\odot$',fontsize=24)
 
     for time in [1,3]:
         for i in range(3,-1,-1):
@@ -304,27 +309,27 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
                      linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx])
 
     if rho==1:
-        plt.text(13, 8.55, '$T < T_{\\rm cr}$', fontsize=23)
-        plt.text(9.5,8.245, '$t=0.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
-        plt.text(10.45,8.42, '$t=0.5 \\thinspace \\thinspace \\rm yr$',fontsize=20)
+        plt.text(13, 8.52, '$T < T_{\\rm cr}$', fontsize=25)
+        plt.text(9.5,8.25, '$t=0.0 \\thinspace \\thinspace \\rm yr$',fontsize=23)
+        plt.text(10.45,8.42, '$t=0.5 \\thinspace \\thinspace \\rm yr$',fontsize=23)
 
-        plt.text(11.82,8.67,'GIPSF',fontsize=14,rotation=86)
-        plt.text(12.23,8.68,'AWP2',fontsize=14,rotation=84)
-        plt.text(13.03,8.75,'SCLBL',fontsize=14,rotation=83)
+        plt.text(11.82,8.67,'GIPSF',fontsize=17,rotation=86)
+        plt.text(12.23,8.68,'AWP2',fontsize=17,rotation=84)
+        plt.text(13.03,8.75,'SCLBL',fontsize=17,rotation=83)
 
-        plt.text(13.74,8.42,'GIPSF',fontsize=14,rotation=-90)
+        plt.text(13.72,8.42,'GIPSF',fontsize=17,rotation=-90)
         #plt.text(14.18,8.47,'AWP2, SCLBL',fontsize=14,rotation=-89)
         
     elif rho==2:
-        plt.text(13.05, 8.55, '$T < T_{\\rm cr}$', fontsize=23)
-        plt.text(12.01,8.23, '$t=0.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
-        plt.text(11.015,8.54, '$t=0.5 \\thinspace \\thinspace \\rm yr$',fontsize=20)
+        plt.text(13.1, 8.49, '$T < T_{\\rm cr}$', fontsize=25)
+        plt.text(12.1,8.23, '$t=0.0 \\thinspace \\thinspace \\rm yr$',fontsize=23)
+        plt.text(11.07,8.52, '$t=0.5 \\thinspace \\thinspace \\rm yr$',fontsize=23)
         
-        plt.text(11.82,8.67,'GIPSF',fontsize=14,rotation=86)
-        plt.text(12.23,8.68,'AWP2',fontsize=14,rotation=84)
-        plt.text(13.00,8.69,'SCLBL',fontsize=14,rotation=83)
+        plt.text(11.82,8.67,'GIPSF',fontsize=17,rotation=86)
+        plt.text(12.23,8.69,'AWP2',fontsize=17,rotation=84)
+        plt.text(13.00,8.69,'SCLBL',fontsize=17,rotation=83)
 
-        plt.text(13.74,8.42,'GIPSF',fontsize=14,rotation=-90)
+        plt.text(13.74,8.42,'GIPSF',fontsize=17,rotation=-90)
         #plt.text(14.20,8.43,'AWP2, SCLBL',fontsize=14,rotation=-89)
     idx = 0
 
@@ -342,12 +347,12 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
     ax2.tick_params(axis='both', which='both', pad=8, left='on', right='on',top='on',bottom='on')
 
     if rho==2:
-        plt.yticks(np.array([8,8.1,8.2,8.3,8.4,8.5,8.6]),fontsize=20)
+        plt.yticks(np.array([8,8.1,8.2,8.3,8.4,8.5,8.6]),fontsize=29)
     else:
-        plt.yticks(np.array([8,8.2,8.4,8.6,8.8,9]),fontsize=20)
-        plt.ylabel('$\\rm log \\thinspace$$ \\widetilde{T} \\thinspace \\thinspace \\thinspace \\rm [K]$',fontsize=24)
-    plt.xlabel('$\\rm log \\thinspace$$\\rho \\thinspace \\thinspace \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=24)
-    plt.xticks(np.array([9,10,11,12,13,14,15]),fontsize=20)
+        plt.yticks(np.array([8,8.2,8.4,8.6,8.8,9]),fontsize=29)
+        plt.ylabel('$\\rm log \\thinspace$$ \\widetilde{T} \\thinspace \\thinspace \\thinspace \\rm [K]$',fontsize=29)
+    plt.xlabel('$\\rm log \\thinspace$$\\rho \\thinspace \\thinspace \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=29)
+    plt.xticks(np.array([9,10,11,12,13,14,15]),fontsize=29)
     plt.xlim(9, np.log10(1.5e14))
 
     plt.fill_between(Tcrit[:,0], np.ones(len(Tcrit[:,0])), np.log10(Tcrit[:,2]*1e9), facecolor=colors2[2], interpolate=True, alpha=1)
@@ -377,14 +382,14 @@ def temperature_profile_profile(rho=2, Pow=4, dt=0):
         idx += 1
 
     if rho==1:
-        plt.text(13, 8.55, '$T < T_{\\rm cr}$', fontsize=23)
-        plt.text(9.66,8.35, '$t=15.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
-        plt.text(9.5,8.545, '$t=3.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
+        plt.text(13, 8.47, '$T < T_{\\rm cr}$', fontsize=25)
+        plt.text(9.66,8.35, '$t=15.0 \\thinspace \\thinspace \\rm yr$',fontsize=23)
+        plt.text(9.5,8.54, '$t=3.0 \\thinspace \\thinspace \\rm yr$',fontsize=23)
       
     else:
-        plt.text(13, 8.45, '$T < T_{\\rm cr}$', fontsize=23)
-        plt.text(9.5,8.4, '$t=3.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
-        plt.text(11.37,8.29, '$t=15.0 \\thinspace \\thinspace \\rm yr$',fontsize=20)
+        plt.text(13, 8.40, '$T < T_{\\rm cr}$', fontsize=25)
+        plt.text(9.5,8.4, '$t=3.0 \\thinspace \\thinspace \\rm yr$',fontsize=23)
+        plt.text(11.71,8.29, '$t=15.0 \\thinspace \\thinspace \\rm yr$',fontsize=23)
     if rho==1:
         plt.savefig('profile_1.eps', format='eps')
         #plt.savefig('profile_1.jpeg', format='jpeg')
@@ -403,12 +408,11 @@ def timedelay(Pow=5, dt=0):
     # 0 -- 10, 1 -- 50, 2 -- 100, 3 -- 200, 4 -- 500, 5 -- 1000
     rho_change = np.array([0,1,-1,2,-2,3])
     plot_style()
-    Pow_idx = 0
 
-    y_sample = np.zeros((4, 200, 3))
+    y_sample = np.zeros((4, 200))
     rho_sample = np.linspace(10.5,13, 200)
 
-    for Pow in [0, 5, 4]:
+    for Pow in [4]:
 
         array_lm = np.zeros((4, 6))
 
@@ -445,33 +449,28 @@ def timedelay(Pow=5, dt=0):
                     #plt.scatter(np.log10(rho_values[rho]), array_lm[i, rho], marker=shape[0], s=170,facecolor=colors[i], edgecolor='black',linewidth=2.8, zorder=5)
 
         for i in range(0, 4):
-
             lm = interpolate.interp1d(np.log10(rho_values),array_lm[i,:], kind='cubic')
-            y_sample[i,:,Pow_idx] = lm(rho_sample)
+            y_sample[i,:] = lm(rho_sample)
 
-        Pow_idx += 1
 
     alpha = np.array([0.5, 0.5, 0.4, 0.5])
     zorder = np.array([4,2,2,3])
 
     for idx in range(4):
-        #plt.fill_between(rho_sample, y_sample[i,:,0], y_sample[i,:,1], facecolor=colors[i], interpolate=True, alpha=alpha[i])
-        plt.plot(rho_sample, y_sample[idx,:,2], color=colors[idx],
+        plt.plot(rho_sample, y_sample[idx,:], color=colors[idx],
                      linewidth=line_thickness[idx], dashes = (dashes[idx,0],dashes[idx,1]),zorder=order[idx],label=labels[idx])
 
-    plt.xticks([10.5,11,11.5,12,12.5,13],fontsize=20)
+    plt.xticks([10.5,11,11.5,12,12.5,13],fontsize=29)
     plt.xlim(11.4,13)
 
-    plt.yticks([0,2,4,6,8,10],fontsize=20)
+    plt.yticks([0,2,4,6,8,10],fontsize=29)
     plt.ylim(1,10)
 
-    plt.xlabel('$\\rm log \\thinspace$$\\rho_{1} \\thinspace \\thinspace  \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=24)
-    plt.ylabel('$\Delta t_{\\rm r}$$\\thinspace \\thinspace  \\thinspace \\rm yr$',fontsize=24)
+    plt.xlabel('$\\rm log \\thinspace$$\\rho_{1} \\thinspace \\thinspace  \\thinspace \\rm [g \\thinspace cm^{-3}]$',fontsize=29)
+    plt.ylabel('$\Delta t_{\\rm r},\\thinspace  \\thinspace \\rm yr$',fontsize=29)
+    plt.text(11.44,6.6,'$M = 1.40 \\thinspace \\rm M \\odot$',fontsize=24)
 
-    #plt.text(11.45,6.8,'$ H_{\\rm{0}}/H_{\\rm{c}} = 10^{2}$', fontsize=23)
-    #plt.text(11.45,9,'$ M = 1.4 M_{\odot}$', fontsize=25)
-
-    plt.legend(loc='upper left', fontsize=20,frameon=False)
+    plt.legend(loc='upper left', fontsize=23,frameon=False)
     plt.savefig('timedelay.eps', format='eps')
     plt.show()
 

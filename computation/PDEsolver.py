@@ -526,7 +526,7 @@ def params(time,source_name):
 
     # ACCRETION
     turn_on_time_0 = 1e3
-    turn_on_time = turn_on_time_0 + 0.17 # 1 for general problem
+    turn_on_time = turn_on_time_0 + 0.2 # 1 for general problem
     t_source_max = turn_on_time + 30
     name = source_name
 
@@ -535,8 +535,12 @@ def params(time,source_name):
     t_source_steps      = [time_steps[error_min], time_steps[error_min]*10  , time_steps[error_min]*20 , time_steps[error_min]*50,
                            time_steps[error_min]*100 , time_steps[error_min]*300 , 5.e6, 5.e7, 5.e7]
 
-    t_points_save_data  = numpy.array([turn_on_time + 0.00001, turn_on_time + 0.01, turn_on_time + 0.1, turn_on_time + 0.5, turn_on_time + 1., turn_on_time + 1.5,
-                                       turn_on_time + 2.,   turn_on_time + 2.5,  turn_on_time + 3,  turn_on_time + 3.5, turn_on_time + 4., turn_on_time + 4.5, turn_on_time + 5])
+    t_points_save_data  = numpy.array([turn_on_time-0.2, turn_on_time-0.15, turn_on_time-0.1, turn_on_time-0.05, turn_on_time + 0.00001, turn_on_time + 0.01, turn_on_time + 0.1, turn_on_time + 0.5, turn_on_time + 1., turn_on_time + 1.5,
+                                       turn_on_time + 2.,   turn_on_time + 2.5,  turn_on_time + 3,  turn_on_time + 3.5, turn_on_time + 4., turn_on_time + 4.5, turn_on_time + 5,
+                                       turn_on_time + 6, turn_on_time + 7, turn_on_time + 8, turn_on_time + 9, turn_on_time + 10, turn_on_time + 11,
+                                       turn_on_time + 12, turn_on_time + 13, turn_on_time + 14, turn_on_time + 15, turn_on_time + 16, turn_on_time + 17,
+                                       turn_on_time + 18, turn_on_time + 19, turn_on_time + 20, turn_on_time + 21, turn_on_time + 22, turn_on_time + 23,
+                                       turn_on_time + 24, turn_on_time + 25, turn_on_time + 26, turn_on_time + 27, turn_on_time + 28, turn_on_time + 29])
 
 # ENERGY RELEASES
 '''

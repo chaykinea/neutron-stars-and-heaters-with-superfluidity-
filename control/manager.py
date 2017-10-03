@@ -27,9 +27,10 @@ log_rho_b      = 9.0                                           # to determine th
 rho_star       = 10**8                                         # [0<=rho_star<=10**log_rho_b] if 0 then Fe envelope is used, if max then C, and mixture in between
 tite_model     = 0                                             # 0 for A. Y. Potekhin et al 1997 and 1 for M. V. Beznogov et al 2016 [C-Fe mixture]
 
-T_0            = 0.5865e8 # KS 0.40e8 XTE 1.30470e8     #1e8 for general case     # initial redshifted temperature of the star (T(r) = const at time t = 0) in K
+T_0            = 0.569e8                                       # 1e8 for general case     # initial redshifted temperature of the star (T(r) = const at time t = 0) in K
 # ----------------------------------------------------------------
-# track 83 <--> 0.57e8
+# track 83 <--> 0.569e8
+# track 84.3 <--> 0.5865e8
 
 # ----------------------------------------------------------------
 # -----------parameters for creating mesh and solving PDE---------
