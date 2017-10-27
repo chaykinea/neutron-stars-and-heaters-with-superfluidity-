@@ -160,7 +160,7 @@ def shift():
     plt.savefig('ratios_density_m1.eps', format='eps')
     plt.show()
 
-shift()
+#shift()
 
 def shift2():
 
@@ -238,7 +238,7 @@ def shift2():
     plt.savefig('ratios_density_m2.eps', format='eps')
     plt.show()
 
-shift2()
+#shift2()
 
 def _Tcs(nn):
 
@@ -319,7 +319,7 @@ def T_crit():
     #plt.show()
     plt.savefig('Tcrit_ns.eps',format='eps')
 
-#T_crit()
+T_crit()
 
 def heat_cap():
 
